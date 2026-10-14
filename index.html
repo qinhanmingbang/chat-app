@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Chat 聊天</title>
+<style>
+:root{--g:#07c160}
+*{box-sizing:border-box;margin:0}
+body{font:16px/1.4 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#ededed;color:#111;height:100dvh;overflow:hidden}
+.h{display:none!important}
+button{font:inherit;border:0;border-radius:6px;background:var(--g);color:#fff;padding:8px 14px;cursor:pointer}
+button.g{background:#ddd;color:#333}
+input{font:inherit;border:1px solid #ddd;border-radius:6px;padding:10px;width:100%;background:#fff}
+.pg{display:flex;flex-direction:column;height:100dvh}
+.top{padding:calc(12px + env(safe-area-inset-top)) 14px 12px;text-align:center;font-weight:600;border-bottom:1px solid #d8d8d8;background:#ededed;display:flex;align-items:center;justify-content:space-between;min-height:50px}
+.top span{flex:1}
+.top button{background:none;color:#111;padding:4px 8px;font-size:20px}
+#main{flex:1;overflow:auto;background:#fff}
+.tabs{display:flex;background:#f7f7f7;border-top:1px solid #d8d8d8;padding-bottom:env(safe-area-inset-bottom)}
+.tabs button{flex:1;background:none;color:#666;border-radius:0;padding:12px}
+.tabs .on{color:var(--g);font-weight:600}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #f0f0f0}
+.row b{flex:1;font-weight:500}
+.av{width:44px;height:44px;border-radius:6px;object-fit:cover;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600}
+.big{display:flex;flex-direction:column;align-items:center;gap:10px;padding:30px 0 10px}
+.big .av{width:88px;height:88px;font-size:34px;cursor:pointer}
+.bd{background:#fa5151;color:#fff;border-radius:10px;padding:0 7px;font-style:normal;font-size:13px}
+.sec{padding:8px 14px;background:#ededed;font-size:13px;color:#666}
+.empty{padding:40px 20px;text-align:center;color:#999}
+.sr{display:flex;gap:8px;padding:12px}
+.sr input{flex:1}
+.box{max-width:360px;margin:0 auto;padding:70px 24px;display:grid;gap:12px;text-align:center}
+.box h1{font-size:26px;color:var(--g)}
+.ov{position:fixed;inset:0;background:#ededed;display:flex;flex-direction:column;z-index:5}
+#msgs{flex:1;overflow:auto;padding:12px}
+.m{display:flex;gap:8px;margin-bottom:14px;align-items:flex-start}
+.m.me{flex-direction:row-reverse}
+.bb{background:#fff;padding:9px 12px;border-radius:6px;max-width:70%;white-space:pre-wrap;word-break:break-word}
+.me .bb{background:#95ec69}
+.pic{max-width:200px;max-height:240px;border-radius:4px;display:block}
+audio{max-width:210px;height:36px}
+.bar{display:flex;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#f7f7f7;border-top:1px solid #d8d8d8;align-items:center}
+.bar .ic{background:none;font-size:24px;padding:4px;color:#111;line-height:1}
+#mic.rec{background:#fa5151;border-radius:50%}
+#call{background:#111;color:#fff;z-index:9}
+#rv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#lv{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top));width:100px;height:140px;object-fit:cover;border-radius:8px;background:#333}
+#call.a video{opacity:0;width:1px;height:1px;left:0;top:0}
+#cs{position:relative;margin-top:30vh;text-align:center;font-size:20px;padding:0 20px}
+#cb{position:absolute;bottom:calc(40px + env(safe-area-inset-bottom));left:0;right:0;display:flex;justify-content:center;gap:48px}
+#cb button{width:64px;height:64px;border-radius:50%;font-size:26px;padding:0}
+#cb .no{background:#fa5151}
+#tt{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#000c;color:#fff;padding:8px 14px;border-radius:6px;z-index:20;max-width:90%;text-align:center}
+</style></head>
+<body>
+
+<!-- 登录 -->
+<div id="auth" class="h"><div class="box">
+  <h1>Chat</h1>
+  <input id="em" type="email" data-p="email" autocomplete="email">
+  <input id="pw" type="password" data-p="pw" autocomplete="current-password">
+  <button onclick="login()" data-i="login"></button>
+  <button class="g" onclick="signup()" data-i="signup"></button>
+  <button class="g" onclick="setLang(lang=='zh'?'en':'zh')">中文 / English</button>
+</div></div>
+
+<!-- 设置昵称 -->
+<div id="setup" class="h"><div class="box">
+  <h1 data-i="setup"></h1>
+  <input id="nm" data-p="uname" maxlength="20">
+  <button onclick="saveName()" data-i="save"></button>
+</div></div>
+
+<!-- 主界面 -->
+<div id="app" class="pg h">
+  <div class="top"><span id="hdr"></span></div>
+  <div id="main"></div>
+  <div class="tabs">
+    <button id="tb-chats" onclick="setTab('chats')" data-i="chats"></button>
+    <button id="tb-add" onclick="setTab('add')" data-i="add"></button>
+    <button id="tb-me" onclick="setTab('me')" data-i="me"></button>
+  </div>
+</div>
+
+<!-- 聊天页 -->
+<div id="chat" class="ov h">
+  <div class="top"><button onclick="closeChat()">‹</button><span id="ctitle"></span>
+    <button onclick="startCall(false)">📞</button><button onclick="startCall(true)">🎥</button></div>
+  <div id="msgs"></div>
+  <div class="bar">
+    <button id="mic" class="ic" onclick="toggleRec()">🎤</button>
+    <input id="inp" data-p="msg" onkeydown="if(event.key=='Enter')sendText()">
+    <label class="ic">🖼<input type="file" accept="image/*" hidden onchange="sendImg(this.files[0]);this.value=''"></label>
+    <button onclick="sendText()" data-i="send"></button>
+  </div>
+</div>
+
+<!-- 通话页 -->
+<div id="call" class="ov h">
+  <video id="rv" autoplay playsinline></video>
+  <video id="lv" autoplay playsinline muted></video>
+  <div id="cs"></div>
+  <div id="cb"><button id="ca" onclick="acceptCall()">✓</button><button class="no" onclick="hangup()">✕</button></div>
+</div>
+<div id="tt" class="h"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+// ====== 只需要改这两行（Supabase → Project Settings → API）======
+const SB_URL='https://你的项目.supabase.co';
+const SB_KEY='你的anon public key';
+// ==============================================================
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const BUCKET='chat-files';
+const L={
+zh:{chats:'聊天',add:'加好友',me:'我',email:'邮箱',pw:'密码（至少6位）',login:'登录',signup:'注册',uname:'昵称（2-20个字）',setup:'设置昵称',save:'保存',reqs:'好友申请',accept:'同意',reject:'拒绝',nofr:'还没有好友，去“加好友”搜索吧',search:'输入对方昵称',go:'搜索',none:'没有找到',exists:'已经申请过或已是好友',sent:'好友申请已发送',taken:'这个昵称已被使用',nomic:'无法使用麦克风/摄像头，请允许权限',calling:'正在呼叫 ',inv:' 邀请你通话',msg:'输入消息',send:'发送',logout:'退出登录',lang:'语言',checkmail:'请先到邮箱点击验证链接，再登录',invalid:'昵称需要2-20个字',tap:'点击头像可更换',busy:'对方正在通话中'},
+en:{chats:'Chats',add:'Add friend',me:'Me',email:'Email',pw:'Password (6+ chars)',login:'Log in',signup:'Sign up',uname:'Username (2-20 chars)',setup:'Choose a username',save:'Save',reqs:'Friend requests',accept:'Accept',reject:'Decline',nofr:'No friends yet. Go to "Add friend" to search.',search:'Enter a username',go:'Search',none:'No users found',exists:'Already requested or already friends',sent:'Friend request sent',taken:'That username is taken',nomic:'Cannot use microphone/camera. Please allow access.',calling:'Calling ',inv:' is calling you',msg:'Message',send:'Send',logout:'Log out',lang:'Language',checkmail:'Confirm your email first, then log in',invalid:'Username must be 2-20 characters',tap:'Tap avatar to change',busy:'The other person is busy'}};
+let lang=localStorage.lang||(navigator.language.startsWith('zh')?'zh':'en');
+const t=k=>L[lang][k]||k;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const av=p=>p.avatar_url?`<img class="av" src="${esc(p.avatar_url)}">`:`<div class="av" style="background:hsl(${[...p.username].reduce((a,c)=>a+c.charCodeAt(0),0)*47%360},45%,55%)">${esc(p.username[0].toUpperCase())}</div>`;
+let me,prof,friends=[],reqs=[],rel=[],unread={},cur=null,tab='chats',subbed=false,tmr;
+
+function toast(s){const e=$('#tt');e.textContent=s;e.classList.remove('h');clearTimeout(tmr);tmr=setTimeout(()=>e.classList.add('h'),2800)}
+function show(id){['auth','setup','app'].forEach(x=>$('#'+x).classList.toggle('h',x!=id))}
+function setLang(l){lang=l;localStorage.lang=l;document.documentElement.lang=l;applyLang()}
+function applyLang(){
+  document.querySelectorAll('[data-i]').forEach(e=>e.textContent=t(e.dataset.i));
+  document.querySelectorAll('[data-p]').forEach(e=>e.placeholder=t(e.dataset.p));
+  if(prof)setTab(tab);
+}
+
+// ---------- 登录注册 ----------
+async function login(){
+  const {data,error}=await sb.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});
+  if(error)return toast(error.message);start(data.user);
+}
+async function signup(){
+  const {data,error}=await sb.auth.signUp({email:$('#em').value.trim(),password:$('#pw').value});
+  if(error)return toast(error.message);
+  if(!data.session)return toast(t('checkmail'));start(data.user);
+}
+async function logout(){await sb.auth.signOut();location.reload()}
+async function start(u){
+  me=u;
+  const {data}=await sb.from('profiles').select('*').eq('id',u.id).maybeSingle();
+  if(!data)return show('setup');
+  prof=data;show('app');await loadRel();subscribe();setTab(tab);
+}
+async function saveName(){
+  const n=$('#nm').value.trim();
+  if(n.length<2||n.length>20)return toast(t('invalid'));
+  const {error}=await sb.from('profiles').insert({id:me.id,username:n});
+  if(error)return toast(error.code=='23505'?t('taken'):error.message);
+  start(me);
+}
+
+// ---------- 好友 ----------
+async function loadRel(){
+  const {data}=await sb.from('friendships').select('*').or(`requester.eq.${me.id},addressee.eq.${me.id}`);
+  rel=data||[];
+  const other=r=>r.requester==me.id?r.addressee:r.requester;
+  const ids=[...new Set(rel.map(other))];
+  const ps=ids.length?(await sb.from('profiles').select('*').in('id',ids)).data||[]:[];
+  const pm=Object.fromEntries(ps.map(p=>[p.id,p]));
+  friends=rel.filter(r=>r.status=='accepted').map(r=>pm[other(r)]).filter(Boolean);
+  reqs=rel.filter(r=>r.status=='pending'&&r.addressee==me.id).map(r=>({id:r.id,p:pm[r.requester]})).filter(r=>r.p);
+  if(tab=='chats')renderChats();
+}
+async function acc(id){await sb.from('friendships').update({status:'accepted'}).eq('id',id);loadRel()}
+async function rej(id){await sb.from('friendships').delete().eq('id',id);loadRel()}
+async function srch(){
+  const q=$('#q').value.trim();if(!q)return;
+  const {data}=await sb.from('profiles').select('*').ilike('username',q+'%').neq('id',me.id).limit(10);
+  $('#res').innerHTML=(data||[]).map(p=>`<div class="row">${av(p)}<b>${esc(p.username)}</b><button onclick="addF('${p.id}')">${t('add')}</button></div>`).join('')||`<p class="empty">${t('none')}</p>`;
+}
+async function addF(id){
+  if(rel.some(r=>r.requester==id||r.addressee==id))return toast(t('exists'));
+  const {error}=await sb.from('friendships').insert({requester:me.id,addressee:id});
+  if(error)return toast(error.message);
+  toast(t('sent'));loadRel();
+}
+
+// ---------- 页面渲染 ----------
+function setTab(x){
+  tab=x;$('#hdr').textContent=t(x);
+  ['chats','add','me'].forEach(k=>$('#tb-'+k).classList.toggle('on',k==x));
+  if(x=='chats')renderChats();
+  else if(x=='add')$('#main').innerHTML=`<div class="sr"><input id="q" placeholder="${t('search')}" onkeydown="if(event.key=='Enter')srch()"><button onclick="srch()">${t('go')}</button></div><div id="res"></div>`;
+  else renderMe();
+}
+function renderChats(){
+  $('#main').innerHTML=(reqs.length?`<div class="sec">${t('reqs')}</div>`+reqs.map(r=>`<div class="row">${av(r.p)}<b>${esc(r.p.username)}</b><button onclick="acc(${r.id})">${t('accept')}</button><button class="g" onclick="rej(${r.id})">${t('reject')}</button></div>`).join(''):'')
+  +(friends.length?friends.map(f=>`<div class="row" onclick="openChat('${f.id}')">${av(f)}<b>${esc(f.username)}</b>${unread[f.id]?`<i class="bd">${unread[f.id]}</i>`:''}</div>`).join(''):`<p class="empty">${t('nofr')}</p>`);
+}
+function renderMe(){
+  $('#main').innerHTML=`<div class="big"><label>${av(prof)}<input type="file" accept="image/*" hidden onchange="setAvatar(this.files[0])"></label><b>${esc(prof.username)}</b><small style="color:#999">${t('tap')}</small></div>
+  <div class="row"><b>${t('lang')}</b><button class="${lang=='zh'?'':'g'}" onclick="setLang('zh')">中文</button><button class="${lang=='en'?'':'g'}" onclick="setLang('en')">English</button></div>
+  <div style="padding:20px"><button class="g" style="width:100%" onclick="logout()">${t('logout')}</button></div>`;
+}
+
+// ---------- 文件上传 ----------
+async function up(folder,blob,ext,ct){
+  const path=`${folder}/${me.id}/${Date.now()}.${ext}`;
+  const {error}=await sb.storage.from(BUCKET).upload(path,blob,{contentType:ct});
+  if(error){toast(error.message);return null}
+  return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+}
+const ext=f=>(f.name.split('.').pop()||'jpg').toLowerCase();
+async function setAvatar(f){
+  if(!f)return;const u=await up('avatars',f,ext(f),f.type);if(!u)return;
+  await sb.from('profiles').update({avatar_url:u}).eq('id',me.id);prof.avatar_url=u;renderMe();
+}
+
+// ---------- 聊天 ----------
+async function openChat(id){
+  cur=friends.find(f=>f.id==id);unread[id]=0;renderChats();
+  $('#ctitle').textContent=cur.username;$('#msgs').innerHTML='';$('#chat').classList.remove('h');
+  const a=me.id,b=id;
+  const {data}=await sb.from('messages').select('*').or(`and(sender.eq.${a},receiver.eq.${b}),and(sender.eq.${b},receiver.eq.${a})`).order('created_at',{ascending:true}).limit(200);
+  (data||[]).forEach(addMsg);
+}
+function closeChat(){cur=null;$('#chat').classList.add('h')}
+function addMsg(m){
+  const mine=m.sender==me.id,p=mine?prof:cur;
+  const body=m.type=='image'?`<img class="pic" src="${esc(m.content)}" onclick="window.open(this.src)">`:m.type=='voice'?`<audio controls src="${esc(m.content)}"></audio>`:esc(m.content);
+  const d=document.createElement('div');d.className='m'+(mine?' me':'');
+  d.innerHTML=`${av(p)}<div class="bb">${body}</div>`;
+  $('#msgs').append(d);$('#msgs').scrollTop=1e9;
+}
+async function send(type,content){
+  const {data,error}=await sb.from('messages').insert({sender:me.id,receiver:cur.id,type,content}).select().single();
+  if(error)return toast(error.message);addMsg(data);
+}
+function sendText(){const i=$('#inp'),v=i.value.trim();if(!v||!cur)return;i.value='';send('text',v)}
+async function sendImg(f){if(!f||!cur)return;const u=await up('images',f,ext(f),f.type);if(u)send('image',u)}
+function onMsg(m){
+  if(cur&&cur.id==m.sender)addMsg(m);
+  else{unread[m.sender]=(unread[m.sender]||0)+1;if(tab=='chats')renderChats()}
+}
+
+// ---------- 语音消息（点一下开始，再点一下发送）----------
+let rec,chunks=[];
+async function toggleRec(){
+  const b=$('#mic');
+  if(rec&&rec.state=='recording'){rec.stop();return}
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({audio:true});
+    const mt=MediaRecorder.isTypeSupported('audio/webm')?'audio/webm':'audio/mp4';
+    rec=new MediaRecorder(s,{mimeType:mt});chunks=[];
+    rec.ondataavailable=e=>chunks.push(e.data);
+    rec.onstop=async()=>{
+      s.getTracks().forEach(x=>x.stop());b.classList.remove('rec');
+      const blob=new Blob(chunks,{type:mt});if(blob.size<1500||!cur)return;
+      const u=await up('voice',blob,mt.includes('webm')?'webm':'m4a',mt);if(u)send('voice',u);
+    };
+    rec.start();b.classList.add('rec');
+  }catch(e){toast(t('nomic'))}
+}
+
+// ---------- 实时订阅 ----------
+let sig;
+function subscribe(){
+  if(subbed)return;subbed=true;
+  sb.channel('db-'+me.id)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'receiver=eq.'+me.id},e=>onMsg(e.new))
+    .on('postgres_changes',{event:'*',schema:'public',table:'friendships',filter:'addressee=eq.'+me.id},loadRel)
+    .on('postgres_changes',{event:'*',schema:'public',table:'friendships',filter:'requester=eq.'+me.id},loadRel)
+    .subscribe();
+  sig=sb.channel('sig-'+me.id).on('broadcast',{event:'sig'},e=>onSig(e.payload)).subscribe();
+}
+
+// ---------- 语音/视频通话（WebRTC，信号通过 Supabase Realtime 传递）----------
+const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun.cloudflare.com:3478'}]};
+let pc,stream,peer,pend=[],offerIn=null,chs={};
+const chan=to=>chs[to]||(chs[to]=new Promise(r=>{const c=sb.channel('sig-'+to);c.subscribe(s=>{if(s=='SUBSCRIBED')r(c)})}));
+async function sendSig(to,p){(await chan(to)).send({type:'broadcast',event:'sig',payload:{...p,from:me.id}})}
+async function media(video){
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:true,video:video?{facingMode:'user'}:false});return true}
+  catch(e){toast(t('nomic'));return false}
+}
+function showCall(video,txt,incoming){
+  $('#call').classList.remove('h');$('#call').classList.toggle('a',!video);
+  $('#cs').textContent=txt;$('#ca').classList.toggle('h',!incoming);
+}
+function mkPc(){
+  pc=new RTCPeerConnection(ICE);
+  stream.getTracks().forEach(x=>pc.addTrack(x,stream));
+  pc.onicecandidate=e=>e.candidate&&sendSig(peer.id,{k:'ice',c:e.candidate});
+  pc.ontrack=e=>{$('#rv').srcObject=e.streams[0];$('#cs').textContent=''};
+  pc.onconnectionstatechange=()=>{if(pc&&pc.connectionState=='failed')endCall(true)};
+  $('#lv').srcObject=stream;
+}
+async function startCall(video){
+  if(pc||!cur)return;peer=cur;
+  if(!await media(video))return;
+  showCall(video,t('calling')+peer.username,false);
+  mkPc();
+  const o=await pc.createOffer();await pc.setLocalDescription(o);
+  sendSig(peer.id,{k:'offer',video,sdp:pc.localDescription});
+}
+async function onSig(p){
+  if(p.k=='offer'){
+    const f=friends.find(x=>x.id==p.from);if(!f)return;
+    if(pc||offerIn)return sendSig(p.from,{k:'bye'});
+    offerIn=p;peer=f;pend=[];
+    showCall(p.video,f.username+t('inv'),true);
+  }else if(peer&&p.from==peer.id){
+    if(p.k=='answer'&&pc)await pc.setRemoteDescription(p.sdp);
+    else if(p.k=='ice'){if(pc&&pc.remoteDescription)pc.addIceCandidate(p.c).catch(()=>{});else pend.push(p.c)}
+    else if(p.k=='bye')endCall(false);
+  }
+}
+async function acceptCall(){
+  const p=offerIn;offerIn=null;
+  if(!await media(p.video)){sendSig(peer.id,{k:'bye'});return endCall(false)}
+  showCall(p.video,'',false);mkPc();
+  await pc.setRemoteDescription(p.sdp);
+  pend.forEach(c=>pc.addIceCandidate(c).catch(()=>{}));pend=[];
+  const a=await pc.createAnswer();await pc.setLocalDescription(a);
+  sendSig(peer.id,{k:'answer',sdp:pc.localDescription});
+}
+function hangup(){endCall(true)}
+function endCall(notify){
+  if(notify&&peer)sendSig(peer.id,{k:'bye'});
+  if(pc){pc.close();pc=null}
+  if(stream){stream.getTracks().forEach(x=>x.stop());stream=null}
+  offerIn=null;pend=[];$('#rv').srcObject=null;$('#lv').srcObject=null;$('#call').classList.add('h');
+}
+
+// ---------- 启动 ----------
+applyLang();document.documentElement.lang=lang;
+sb.auth.getSession().then(({data})=>data.session?start(data.session.user):show('auth'));
+</script>
+</body></html>
