@@ -1,126 +1,298 @@
 <!DOCTYPE html>
 <html lang="zh"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Chat 聊天</title>
+<title>Chat</title>
+<link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#120a2e"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <style>
-:root{--g:#07c160}
+:root{--a1:#ffc861;--a2:#ff4fa3;--a3:#19e3a1;--b1:#341a7a;--b2:#120a2e;--b3:#06040d;--tx:#f4efe2;--tx2:#b7afd8;--gl:rgba(255,255,255,.08);--bar:rgba(20,12,48,.82);--avbg:#2a1b5e;--me:#2a1030;--mx:#ffd77a;--my:#ff9ac9}
+[data-t=neon]{--a1:#4fd8ff;--a2:#8a6bff;--a3:#5ff0c0;--b1:#0b2a6e;--b2:#06122e;--b3:#02050f;--bar:rgba(6,18,46,.82);--avbg:#0b2a6e;--mx:#8fe6ff;--my:#b9a6ff}
+[data-t=red]{--a1:#ffd15c;--a2:#ff3b5c;--a3:#ff9a3c;--b1:#6e0f1f;--b2:#2e0610;--b3:#0f0205;--bar:rgba(46,6,16,.82);--avbg:#5a0c19;--mx:#ffe08a;--my:#ff8a9e}
+[data-t=jade]{--a1:#7dffcb;--a2:#ffd15c;--a3:#4fd8ff;--b1:#04483a;--b2:#021f1a;--b3:#010a08;--bar:rgba(2,31,26,.82);--avbg:#04382e;--mx:#a9ffdc;--my:#ffe9a0}
+[data-t=sakura]{--a1:#ff5fa2;--a2:#b06bff;--a3:#19c39a;--b1:#ffd6e8;--b2:#ffe9f2;--b3:#fff5fa;--tx:#3a1230;--tx2:#8a5d7c;--gl:rgba(255,255,255,.7);--bar:rgba(255,255,255,.82);--avbg:#fff;--me:#3a1230;--mx:#ffb3d4;--my:#e0c4ff}
 *{box-sizing:border-box;margin:0}
-body{font:16px/1.4 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#ededed;color:#111;height:100dvh;overflow:hidden}
+body{font:16px/1.4 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--b3);color:var(--tx);height:100dvh;overflow:hidden}
 .h{display:none!important}
-button{font:inherit;border:0;border-radius:6px;background:var(--g);color:#fff;padding:8px 14px;cursor:pointer}
-button.g{background:#ddd;color:#333}
-input{font:inherit;border:1px solid #ddd;border-radius:6px;padding:10px;width:100%;background:#fff}
-.pg{display:flex;flex-direction:column;height:100dvh}
-.top{padding:calc(12px + env(safe-area-inset-top)) 14px 12px;text-align:center;font-weight:600;border-bottom:1px solid #d8d8d8;background:#ededed;display:flex;align-items:center;justify-content:space-between;min-height:50px}
-.top span{flex:1}
-.top button{background:none;color:#111;padding:4px 8px;font-size:20px}
-#main{flex:1;overflow:auto;background:#fff}
-.tabs{display:flex;background:#f7f7f7;border-top:1px solid #d8d8d8;padding-bottom:env(safe-area-inset-bottom)}
-.tabs button{flex:1;background:none;color:#666;border-radius:0;padding:12px}
-.tabs .on{color:var(--g);font-weight:600}
-.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #f0f0f0}
-.row b{flex:1;font-weight:500}
-.av{width:44px;height:44px;border-radius:6px;object-fit:cover;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600}
-.big{display:flex;flex-direction:column;align-items:center;gap:10px;padding:30px 0 10px}
-.big .av{width:88px;height:88px;font-size:34px;cursor:pointer}
-.bd{background:#fa5151;color:#fff;border-radius:10px;padding:0 7px;font-style:normal;font-size:13px}
-.sec{padding:8px 14px;background:#ededed;font-size:13px;color:#666}
-.empty{padding:40px 20px;text-align:center;color:#999}
-.sr{display:flex;gap:8px;padding:12px}
-.sr input{flex:1}
-.box{max-width:360px;margin:0 auto;padding:70px 24px;display:grid;gap:12px;text-align:center}
-.box h1{font-size:26px;color:var(--g)}
-.ov{position:fixed;inset:0;background:#ededed;display:flex;flex-direction:column;z-index:5}
-#msgs{flex:1;overflow:auto;padding:12px}
-.m{display:flex;gap:8px;margin-bottom:14px;align-items:flex-start}
+button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
+input{font:inherit;color:var(--tx);border:1px solid color-mix(in srgb,var(--a1) 35%,transparent);border-radius:14px;padding:12px 14px;width:100%;background:var(--gl);outline:0}
+input:focus{border-color:var(--a1);box-shadow:0 0 14px color-mix(in srgb,var(--a1) 50%,transparent)}
+::placeholder{color:var(--tx2)}
+#fx{position:fixed;inset:0;overflow:hidden;background:radial-gradient(120% 60% at 20% 0,var(--b1),var(--b2) 55%,var(--b3))}
+.orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.3;animation:fl 7s ease-in-out infinite,au 12s linear infinite}
+.pt{position:absolute;bottom:-12px;border-radius:50%;animation:ri linear infinite}
+body.nofx .pt,body.nofx .orb{display:none}
+#shell{position:relative;max-width:480px;height:100dvh;margin:0 auto;overflow:hidden}
+@media(min-width:700px){#shell{height:min(calc(100dvh - 40px),880px);margin:20px auto;border-radius:30px;border:1px solid color-mix(in srgb,var(--a1) 45%,transparent);box-shadow:0 0 70px color-mix(in srgb,var(--a1) 35%,transparent);background:rgba(10,6,30,.25)}}
+.pg{position:absolute;inset:0;display:flex;flex-direction:column}
+.ov{background:var(--b2);z-index:5}
+#call{z-index:9;background:var(--b3)}
+.top{display:flex;align-items:center;gap:10px;padding:calc(14px + env(safe-area-inset-top)) 16px 12px;background:var(--bar);border-bottom:1px solid color-mix(in srgb,var(--a1) 35%,transparent);position:relative;min-height:56px}
+.top::after,.sb::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;background:linear-gradient(90deg,transparent,var(--a1),var(--a2),transparent);animation:ln 2.4s linear infinite}
+.ttl{font-size:32px;font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,var(--a1),#fff4cf,var(--a2),var(--a3),var(--a1));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 3s linear infinite}
+.gw{display:inline-block;animation:gl 2.4s ease-in-out infinite}
+#main{flex:1;overflow:auto;padding:10px 0 110px}
+.row{position:relative;overflow:hidden;display:flex;gap:14px;align-items:center;padding:12px 16px;margin:0 12px 10px;border-radius:18px;background:var(--gl);border:1px solid color-mix(in srgb,var(--a1) 30%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--a1) 12%,transparent);animation:si .5s both;cursor:pointer}
+.row .swp{position:absolute;top:0;bottom:0;width:60px;left:-80px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);transform:skewX(-20deg);animation:sw 3.8s infinite}
+.mid{flex:1;min-width:0}.mid b{font-weight:600;display:flex;align-items:center;gap:6px}
+.mid small,.rt small{color:var(--tx2);font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rt{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
+.dot{width:9px;height:9px;border-radius:50%;background:#8a8aa0;display:inline-block}.dot.on{background:var(--a3);box-shadow:0 0 8px var(--a3)}
+.bd{min-width:22px;height:22px;border-radius:11px;background:#ff4f7a;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:700;animation:pu 1.6s infinite;padding:0 6px;font-style:normal}
+.btn{background:linear-gradient(135deg,var(--mx),var(--my));color:var(--me);border-radius:12px;padding:9px 16px;font-weight:800;box-shadow:0 0 16px color-mix(in srgb,var(--a1) 40%,transparent)}
+.btn.g{background:var(--gl);color:var(--tx);box-shadow:none;border:1px solid color-mix(in srgb,var(--a1) 30%,transparent)}
+.req{margin:0 12px 12px;padding:12px 16px;border-radius:16px;background:linear-gradient(90deg,color-mix(in srgb,var(--a1) 30%,transparent),color-mix(in srgb,var(--a2) 28%,transparent),color-mix(in srgb,var(--a3) 22%,transparent),color-mix(in srgb,var(--a1) 30%,transparent));background-size:200% 100%;animation:sh 4s linear infinite,pg 2s infinite;border:1px solid var(--a1)}
+.req .row{margin:8px 0 0;animation:none}
+.empty{padding:50px 24px;text-align:center;color:var(--tx2)}
+.sb{position:relative;overflow:hidden;display:flex;gap:8px;margin:12px 16px;padding:6px;border-radius:16px;background:var(--gl);border:1px solid color-mix(in srgb,var(--a1) 35%,transparent)}
+.sb input{border:0;background:none;box-shadow:none}
+.tabs{position:absolute;left:14px;right:14px;bottom:calc(18px + env(safe-area-inset-bottom));display:flex;padding:10px 0;border-radius:26px;background:var(--bar);border:1px solid color-mix(in srgb,var(--a1) 45%,transparent);box-shadow:0 0 24px color-mix(in srgb,var(--a1) 25%,transparent)}
+.tabs button{flex:1;color:var(--tx2);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+.tabs button.on{color:var(--a1)}.tabs button.on svg{filter:drop-shadow(0 0 8px var(--a1))}
+.tabs button.on::before{content:"";position:absolute;top:-11px;width:36px;height:3px;border-radius:2px;background:var(--a1);box-shadow:0 0 12px var(--a1)}
+svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.av{position:relative;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.av .in{position:absolute;inset:0;border-radius:50%;background:var(--avbg);color:var(--a1);display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden}
+.av.rg::before{content:"";position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(var(--a1),var(--a2),var(--a3),var(--a1));animation:sp 4s linear infinite;box-shadow:0 0 14px color-mix(in srgb,var(--a1) 60%,transparent)}
+.av.rg .in{inset:2px}
+.av img{width:100%;height:100%;object-fit:cover}
+.ib{width:40px;height:40px;border-radius:50%;background:var(--gl);color:var(--a1);display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px color-mix(in srgb,var(--a1) 35%,transparent);flex:none;cursor:pointer}
+.ib.rec{background:#ff4f7a;color:#fff;animation:pu 1s infinite}
+#msgs{flex:1;overflow:auto;padding:16px;position:relative}
+.m{display:flex;gap:8px;margin-bottom:14px;align-items:flex-start;animation:si .4s both}
 .m.me{flex-direction:row-reverse}
-.bb{background:#fff;padding:9px 12px;border-radius:6px;max-width:70%;white-space:pre-wrap;word-break:break-word}
-.me .bb{background:#95ec69}
-.pic{max-width:200px;max-height:240px;border-radius:4px;display:block}
-audio{max-width:210px;height:36px}
-.bar{display:flex;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#f7f7f7;border-top:1px solid #d8d8d8;align-items:center}
-.bar .ic{background:none;font-size:24px;padding:4px;color:#111;line-height:1}
-#mic.rec{background:#fa5151;border-radius:50%}
-#call{background:#111;color:#fff;z-index:9}
-#rv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-#lv{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top));width:100px;height:140px;object-fit:cover;border-radius:8px;background:#333}
-#call.a video{opacity:0;width:1px;height:1px;left:0;top:0}
-#cs{position:relative;margin-top:30vh;text-align:center;font-size:20px;padding:0 20px}
-#cb{position:absolute;bottom:calc(40px + env(safe-area-inset-bottom));left:0;right:0;display:flex;justify-content:center;gap:48px}
-#cb button{width:64px;height:64px;border-radius:50%;font-size:26px;padding:0}
-#cb .no{background:#fa5151}
-#tt{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#000c;color:#fff;padding:8px 14px;border-radius:6px;z-index:20;max-width:90%;text-align:center}
+.bb{position:relative;overflow:hidden;max-width:72%;padding:10px 14px;border-radius:4px 18px 18px 18px;background:var(--gl);border:1px solid color-mix(in srgb,var(--a1) 25%,transparent);white-space:pre-wrap;word-break:break-word}
+.me .bb{border-radius:18px 4px 18px 18px;border:0;background:linear-gradient(135deg,var(--mx),var(--my),var(--mx));background-size:200% 100%;animation:sh 4s linear infinite;color:var(--me);font-weight:500;box-shadow:0 4px 22px color-mix(in srgb,var(--a2) 40%,transparent)}
+.pic{max-width:200px;max-height:240px;border-radius:10px;display:block;cursor:zoom-in}
+audio{max-width:200px;height:36px}
+.bar{display:flex;gap:8px;margin:8px 12px calc(12px + env(safe-area-inset-bottom));padding:8px;border-radius:28px;background:var(--bar);border:1px solid color-mix(in srgb,var(--a1) 45%,transparent);align-items:center;box-shadow:0 0 22px color-mix(in srgb,var(--a1) 22%,transparent)}
+.bar input[type=text],.bar #inp{border:0;background:none;box-shadow:none;padding:8px 4px}
+.send{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--mx),var(--my));color:var(--me);display:flex;align-items:center;justify-content:center;animation:pg 1.8s infinite;flex:none}
+#emo{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:0 12px;padding:8px;border-radius:18px;background:var(--bar);border:1px solid color-mix(in srgb,var(--a1) 35%,transparent);font-size:24px;text-align:center}
+#emo span{cursor:pointer;padding:4px;border-radius:8px}#emo span:active{background:var(--gl)}
+.box{max-width:360px;width:100%;margin:auto;padding:30px 26px;display:grid;gap:12px;text-align:center}
+.box h1{font-size:40px}
+.big{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 0 6px}
+.card{margin:0 12px 12px;padding:14px 16px;border-radius:18px;background:var(--gl);border:1px solid color-mix(in srgb,var(--a1) 30%,transparent)}
+.card h3{font-size:14px;color:var(--tx2);font-weight:500;margin-bottom:10px}
+.sw{display:flex;gap:12px;flex-wrap:wrap}
+.sw button{width:46px;height:46px;border-radius:50%;border:2px solid transparent}
+.sw button.on{border-color:var(--tx);box-shadow:0 0 16px currentColor}
+.flex{display:flex;gap:8px;align-items:center}
+.tg{width:50px;height:28px;border-radius:14px;background:#777;position:relative;flex:none;transition:.2s}
+.tg::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s}
+.tg.on{background:var(--a3)}.tg.on::after{left:25px}
+#rv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+#rv.v0{opacity:0;width:1px;height:1px}
+#lv{position:absolute;right:14px;top:calc(14px + env(safe-area-inset-top));width:100px;height:140px;object-fit:cover;border-radius:16px;background:#222;border:2px solid var(--a1);animation:pg 2s infinite;z-index:2}
+#cav{position:absolute;left:50%;top:34%;width:0;height:0}
+#cav .ring{position:absolute;left:-60px;top:-60px;width:120px;height:120px;border-radius:50%;border:2px solid var(--a1);box-shadow:0 0 16px var(--a1);animation:rp 2.4s infinite}
+#cav .av{position:absolute;left:-52px;top:-52px}
+#cinfo{position:absolute;left:0;right:0;top:calc(34% + 80px);text-align:center;text-shadow:0 2px 10px #000;color:#fff;z-index:2}
+#cn{font-size:28px;font-weight:900}#cs{margin-top:6px;color:var(--a3);font-size:16px}
+#cb{position:absolute;bottom:calc(40px + env(safe-area-inset-bottom));left:0;right:0;display:flex;justify-content:center;gap:16px;z-index:3}
+#cb button{width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;display:flex;align-items:center;justify-content:center}
+#cb button.off{background:#fff;color:#222}
+#cb .no{background:#ff3b5c;border:0;animation:pu 1.6s infinite}#cb .ok{background:var(--a3);border:0;color:#012;animation:pg 1.6s infinite}
+#lb{background:rgba(0,0,0,.92);z-index:12;align-items:center;justify-content:center}#lb img{max-width:96%;max-height:90%}
+#tt{position:absolute;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:9px 16px;border-radius:12px;z-index:20;max-width:90%;text-align:center;border:1px solid var(--a1)}
+.sys{text-align:center;color:var(--tx2);font-size:13px;margin:10px 0;animation:si .3s both}.sys a{color:var(--a1);cursor:pointer;margin-left:6px}
+.rcb{align-self:center;background:var(--bar);border:1px solid color-mix(in srgb,var(--a1) 45%,transparent);color:var(--a1);border-radius:10px;padding:4px 12px;font-size:13px;flex:none;animation:si .2s both}
+.bb.rp,.me .bb.rp{padding:0;min-width:220px;background:linear-gradient(135deg,#ff5a5a,#c8102e);color:#fff;animation:none;border:1px solid #ffd77a;box-shadow:0 4px 22px rgba(255,60,60,.5);cursor:pointer;font-weight:500}
+.bb.rp.done{filter:saturate(.45) brightness(.82)}
+.rpc{display:flex;gap:10px;align-items:center;padding:12px 14px;position:relative;overflow:hidden}
+.rpc::after{content:"";position:absolute;top:0;bottom:0;width:50px;left:-70px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-20deg);animation:sw2 3s infinite}
+.rpc small{display:block;font-size:12px;opacity:.85}
+.rpf{background:rgba(0,0,0,.22);font-size:11px;padding:4px 14px}
+.rpi{width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff1b8,#ffc861);color:#b3121f;font-weight:900;font-size:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px #ffd77a;flex:none}
+.rpc2{border-radius:16px;background:linear-gradient(135deg,#ff5a5a,#c8102e);border:1px solid #ffd77a;color:#fff;margin-bottom:12px;box-shadow:0 4px 22px rgba(255,60,60,.5)}
+#more{display:flex;gap:22px;margin:0 12px;padding:14px 18px;border-radius:18px;background:var(--bar);border:1px solid color-mix(in srgb,var(--a1) 35%,transparent)}
+.mi{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px;color:var(--tx2);cursor:pointer}
+.mic2{width:56px;height:56px;border-radius:16px;background:var(--gl);color:var(--a1);display:flex;align-items:center;justify-content:center;border:1px solid color-mix(in srgb,var(--a1) 35%,transparent)}
+.mic2.rd{background:linear-gradient(135deg,#ff5a5a,#c8102e);color:#ffe08a;border-color:#ffd77a;box-shadow:0 0 18px rgba(255,60,60,.5)}
+.rpbtn{width:100%;background:linear-gradient(135deg,#ff5a5a,#c8102e);color:#ffe08a;font-size:18px;padding:14px;border:1px solid #ffd77a;animation:pu 1.8s infinite}
+.amt{font-size:34px;font-weight:900;color:var(--a1);margin:2px 0 10px;text-shadow:0 0 16px color-mix(in srgb,var(--a1) 60%,transparent)}
+#rpo{background:rgba(0,0,0,.8);z-index:15;align-items:center;justify-content:center}
+.env{position:relative;width:290px;height:420px;border-radius:22px;background:linear-gradient(160deg,#ff5a5a,#c8102e 70%,#8e0b20);border:2px solid #ffd77a;box-shadow:0 0 60px rgba(255,80,80,.6);color:#fff;text-align:center;overflow:hidden;animation:pop .5s both}
+.env .cap{height:150px;border-radius:0 0 50% 50%/0 0 40% 40%;background:linear-gradient(180deg,#e0222f,#b00d1f);box-shadow:0 6px 18px rgba(0,0,0,.3)}
+.env .who{padding-top:22px;font-size:17px;font-weight:700}.env .cap small{display:block;margin-top:4px}
+.k{position:absolute;left:50%;top:112px;margin-left:-38px;width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff1b8,#ffc861 60%,#e0a030);color:#b3121f;font-size:32px;font-weight:900;box-shadow:0 0 24px #ffd77a;animation:pg 1.6s infinite}
+.k.spin{animation:flip .7s linear infinite}
+.env .note{margin-top:80px;font-size:20px;font-weight:700;padding:0 20px}
+.env .big2{margin-top:56px;font-size:46px;font-weight:900;color:#ffe08a;text-shadow:0 0 18px #ffc861}
+.cf{position:absolute;top:-14px;width:8px;height:12px;animation:cf linear forwards}
+@keyframes sw2{0%{left:-70px}60%,100%{left:300px}}
+@keyframes flip{to{transform:rotateY(360deg)}}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+@keyframes cf{to{transform:translateY(480px) rotate(720deg);opacity:.2}}
+.ni{display:flex;gap:12px;padding:14px 16px;margin:0 12px 10px;border-radius:16px;background:var(--gl);border:1px solid color-mix(in srgb,var(--a1) 22%,transparent);cursor:pointer;animation:si .4s both}
+.nt{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:8px}.nt b{font-weight:600;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nm{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--tx2)}
+.hotb{font-style:normal;background:#ff4f4f;color:#fff;border-radius:4px;padding:0 5px;font-size:11px}
+.th{width:112px;height:78px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;text-shadow:0 2px 8px rgba(0,0,0,.35)}
+.ncat{display:flex;gap:20px;overflow-x:auto;padding:4px 18px 12px;scrollbar-width:none}.ncat button{color:var(--tx2);font-size:17px;white-space:nowrap;padding:4px 0;position:relative}.ncat button.on{color:var(--tx);font-weight:800}.ncat button.on::after{content:"";position:absolute;left:20%;right:20%;bottom:-2px;height:3px;border-radius:2px;background:var(--a1);box-shadow:0 0 10px var(--a1)}
+.bn{position:relative;height:150px;margin:0 12px 12px;border-radius:18px;overflow:hidden;box-shadow:0 0 24px color-mix(in srgb,var(--a1) 25%,transparent)}
+.bn div{position:absolute;inset:0;display:flex;align-items:flex-end;padding:16px;font-size:20px;font-weight:800;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.4);opacity:0;animation:bn 12s infinite;cursor:pointer}
+.hr{display:flex;gap:10px;align-items:center;padding:7px 0;cursor:pointer;font-size:15px}.hr i{font-style:normal;font-weight:900;width:20px;color:var(--tx2)}.hr:nth-child(2) i{color:#ff4f4f}.hr:nth-child(3) i{color:#ff9a3c}.hr:nth-child(4) i{color:#ffc861}
+.ring2{position:relative;width:220px;height:220px;margin:0 auto}.rn{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}.rn b{font-size:44px;font-weight:900;color:var(--a1);text-shadow:0 0 16px color-mix(in srgb,var(--a1) 60%,transparent)}.rn small{color:var(--tx2)}
+.rk{width:24px;text-align:center;font-size:18px;color:var(--tx2)}
+.fc{display:flex;gap:10px;align-items:center;min-width:200px;text-decoration:none;color:inherit}
+.fi{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#4fd8ff,#8a6bff);color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none;text-transform:uppercase}
+.fc small{display:block;font-size:12px;opacity:.75}.fc b{font-weight:600;word-break:break-all}
+.txc{margin:0 14px 12px;padding:14px 16px;border-radius:18px;background:var(--gl);border:1px solid color-mix(in srgb,var(--a1) 28%,transparent);animation:si .4s both}
+.txh{display:flex;justify-content:space-between;align-items:center}.txh small{color:var(--tx2)}
+.txa{font-size:36px;font-weight:900;margin:6px 0}.txa.in{color:var(--a3)}.txa.out{color:#ff6b7a}.txa.adj{color:var(--a1)}
+.txd{font-size:13px;color:var(--tx2);line-height:1.7;border-top:1px solid color-mix(in srgb,var(--a1) 18%,transparent);padding-top:8px}
+#nt{position:absolute;top:calc(10px + env(safe-area-inset-top));left:12px;right:12px;z-index:30;padding:12px 14px;border-radius:16px;background:var(--bar);border:1px solid var(--a3);box-shadow:0 0 24px color-mix(in srgb,var(--a3) 40%,transparent);animation:dn .4s both;font-size:14px}
+.ah{font-size:22px;line-height:1.4;margin-bottom:8px}.ahero{height:160px;border-radius:16px;margin:14px 0}#artb p{line-height:1.8;margin-bottom:14px}
+@keyframes bn{0%{opacity:0}5%,30%{opacity:1}36%,100%{opacity:0}}
+@keyframes dn{from{transform:translateY(-90px);opacity:0}to{transform:none;opacity:1}}
+.gn{font-size:12px;color:var(--a1);margin-bottom:2px;font-weight:600}
+.tm{font-size:11px;opacity:.65;text-align:right;margin-top:3px}.rd{color:#19e3a1}.me .rd{color:#0a7a52}
+.m.pend .bb{opacity:.55}
+.rtry{align-self:center;width:26px;height:26px;border-radius:50%;background:#ff4f7a;color:#fff;font-weight:900;flex:none}
+.rcw{align-self:center;display:flex;gap:6px;flex:none}
+#net{position:absolute;top:0;left:0;right:0;z-index:40;background:#c8102e;color:#fff;text-align:center;padding:calc(6px + env(safe-area-inset-top)) 10px 6px;font-size:13px}
+.txa.refund{color:var(--a1)}
+#tt{word-break:break-word}
+body.nofx *,body.nofx *::before,body.nofx *::after{animation:none!important}
+body.nofx .bn div{opacity:0}body.nofx .bn div:first-child{opacity:1}
+button:disabled{cursor:not-allowed}
+@keyframes sp{to{transform:rotate(360deg)}}
+@keyframes pu{0%,100%{box-shadow:0 0 0 0 rgba(255,79,122,.7)}50%{box-shadow:0 0 0 9px rgba(255,79,122,0)}}
+@keyframes pg{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--a1) 70%,transparent)}50%{box-shadow:0 0 0 11px transparent}}
+@keyframes sh{to{background-position:200% 0}}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+@keyframes au{to{filter:blur(60px) hue-rotate(360deg)}}
+@keyframes rp{0%{transform:scale(.7);opacity:.9}100%{transform:scale(2.8);opacity:0}}
+@keyframes si{from{transform:translateY(14px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+@keyframes ri{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:1}100%{transform:translateY(-1000px) scale(1.3);opacity:0}}
+@keyframes sw{0%{left:-80px}60%,100%{left:560px}}
+@keyframes gl{0%,100%{filter:drop-shadow(0 0 6px color-mix(in srgb,var(--a1) 60%,transparent))}50%{filter:drop-shadow(0 0 18px var(--a2))}}
+@keyframes ln{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
 </style></head>
 <body>
+<div id="fx"></div>
+<div id="shell">
 
-<!-- 登录 -->
-<div id="auth" class="h"><div class="box">
-  <h1>Chat</h1>
+<div id="auth" class="pg h"><div class="box">
+  <div class="gw"><h1 class="ttl">Chat</h1></div>
   <input id="em" type="email" data-p="email" autocomplete="email">
-  <input id="pw" type="password" data-p="pw" autocomplete="current-password">
-  <button onclick="login()" data-i="login"></button>
-  <button class="g" onclick="signup()" data-i="signup"></button>
-  <button class="g" onclick="setLang(lang=='zh'?'en':'zh')">中文 / English</button>
+  <input id="pw" type="password" data-p="pw" autocomplete="current-password" onkeydown="if(event.key=='Enter')once('login',login)">
+  <button class="btn g" type="button" onclick="const q=$('#pw');q.type=q.type=='password'?'text':'password'" data-i="showpw"></button>
+  <button class="btn" onclick="once('login',login)" data-i="login"></button>
+  <button class="btn g" onclick="once('signup',signup)" data-i="signup"></button>
+  <button class="btn g" onclick="setLang(lang=='zh'?'en':'zh')">中文 / English</button>
 </div></div>
 
-<!-- 设置昵称 -->
-<div id="setup" class="h"><div class="box">
-  <h1 data-i="setup"></h1>
-  <input id="nm" data-p="uname" maxlength="20">
-  <button onclick="saveName()" data-i="save"></button>
+<div id="setup" class="pg h"><div class="box">
+  <div class="gw"><h1 class="ttl" style="font-size:28px" data-i="setup"></h1></div>
+  <input id="nm" data-p="uname" maxlength="20" onkeydown="if(event.key=='Enter')once('sn',saveName)">
+  <button class="btn" onclick="once('sn',saveName)" data-i="save"></button>
 </div></div>
 
-<!-- 主界面 -->
 <div id="app" class="pg h">
-  <div class="top"><span id="hdr"></span></div>
+  <div class="top"><div class="gw"><span class="ttl" id="hdr"></span></div></div>
   <div id="main"></div>
   <div class="tabs">
-    <button id="tb-chats" onclick="setTab('chats')" data-i="chats"></button>
-    <button id="tb-add" onclick="setTab('add')" data-i="add"></button>
-    <button id="tb-me" onclick="setTab('me')" data-i="me"></button>
+    <button id="tb-chats" onclick="setTab('chats')"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span data-i="chats"></span></button>
+    <button id="tb-news" onclick="setTab('news')"><svg class="i" viewBox="0 0 24 24"><path d="M4 5h13a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2zM19 9h1a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2M8 9h7M8 13h7"/></svg><span data-i="news"></span></button>
+    <button id="tb-steps" onclick="setTab('steps')"><svg class="i" viewBox="0 0 24 24"><path d="M13 4a1.5 1.5 0 1 0 0 .01M9 21l2-6-3-3 2-5 4 2 3 2M12 12l2 3 1 6"/></svg><span data-i="steps"></span></button>
+    <button id="tb-add" onclick="setTab('add')"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M19 8v6M16 11h6"/></svg><span data-i="add"></span></button>
+    <button id="tb-me" onclick="setTab('me')"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span data-i="me"></span></button>
   </div>
 </div>
 
-<!-- 聊天页 -->
-<div id="chat" class="ov h">
-  <div class="top"><button onclick="closeChat()">‹</button><span id="ctitle"></span>
-    <button onclick="startCall(false)">📞</button><button onclick="startCall(true)">🎥</button></div>
+<div id="chat" class="pg ov h">
+  <div class="top">
+    <button class="ib" onclick="closeChat()" aria-label="back"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+    <div id="chd" style="flex:1;display:flex;align-items:center;gap:10px;min-width:0"></div>
+    <button id="hc" class="ib" onclick="startCall(false)" aria-label="voice"><svg class="i" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></button>
+    <button id="hv" class="ib" onclick="startCall(true)" aria-label="video"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg></button>
+    <button id="hd" class="ib" onclick="headAct()" aria-label="info"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+  </div>
   <div id="msgs"></div>
+  <div id="emo" class="h"></div>
+  <div id="more" class="h">
+    <label class="mi"><div class="mic2"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 9"/></svg></div><span data-i="photo"></span><input type="file" accept="image/*" hidden onchange="sendImg(this.files[0]);this.value='';togg('more')"></label>
+    <label class="mi"><div class="mic2"><svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></div><span data-i="file"></span><input type="file" hidden onchange="sendFile(this.files[0]);this.value='';togg('more')"></label>
+    <button id="mrp" class="mi" onclick="openRpm()"><div class="mic2 rd"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M4 9c5 4 11 4 16 0"/><circle cx="12" cy="12" r="2"/></svg></div><span data-i="rp"></span></button>
+  </div>
   <div class="bar">
-    <button id="mic" class="ic" onclick="toggleRec()">🎤</button>
-    <input id="inp" data-p="msg" onkeydown="if(event.key=='Enter')sendText()">
-    <label class="ic">🖼<input type="file" accept="image/*" hidden onchange="sendImg(this.files[0]);this.value=''"></label>
-    <button onclick="sendText()" data-i="send"></button>
+    <button id="mic" class="ib" onclick="toggleRec()" aria-label="mic"><svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+    <button class="ib" onclick="togg('emo')" aria-label="emoji" style="font-size:22px">😊</button>
+    <input id="inp" type="text" data-p="msg" enterkeyhint="send" oninput="typing()" onkeydown="if(event.key=='Enter')sendText()" onkeyup="if(event.keyCode==13)sendText()">
+    <button class="ib" onclick="togg('more')" aria-label="more"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button class="send" onclick="sendText()" aria-label="send"><svg class="i" viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-2-6-8-2z"/></svg></button>
   </div>
 </div>
 
-<!-- 通话页 -->
-<div id="call" class="ov h">
-  <video id="rv" autoplay playsinline></video>
+<div id="call" class="pg h">
+  <video id="rv" class="v0" autoplay playsinline></video>
+  <div id="cav"></div>
   <video id="lv" autoplay playsinline muted></video>
-  <div id="cs"></div>
-  <div id="cb"><button id="ca" onclick="acceptCall()">✓</button><button class="no" onclick="hangup()">✕</button></div>
+  <div id="cinfo"><div id="cn"></div><div id="cs"></div></div>
+  <div id="cb">
+    <button id="cm" onclick="toggleMute(this)" aria-label="mute"><svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+    <button id="cc" onclick="toggleCam(this)" aria-label="camera"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg></button>
+    <button id="cf" onclick="flipCam()" aria-label="flip"><svg class="i" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3"/></svg></button>
+    <button id="ca" class="ok" onclick="acceptCall()" aria-label="accept"><svg class="i" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></button>
+    <button class="no" onclick="hangup()" aria-label="hang up"><svg class="i" viewBox="0 0 24 24"><path d="M4 15c5-5 11-5 16 0l-3 3-3-2v-2a8 8 0 0 0-4 0v2l-3 2z"/></svg></button>
+  </div>
 </div>
-<div id="tt" class="h"></div>
 
+<div id="net" class="h" data-i="net"></div>
+<div id="fc" class="pg ov h" style="z-index:13"><div class="top"><button class="ib" onclick="$('#fc').classList.add('h')" aria-label="back"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><span style="font-weight:700;font-size:18px" data-i="fcard"></span></div><div id="fcb" style="flex:1;overflow:auto;padding:14px 0"></div></div>
+<div id="gc" class="pg ov h" style="z-index:13"><div class="top"><button class="ib" onclick="$('#gc').classList.add('h')" aria-label="back"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><span style="font-weight:700;font-size:18px" data-i="newgrp"></span></div>
+  <div style="flex:1;overflow:auto;padding:14px 0"><div class="card"><h3 data-i="gname"></h3><input id="gn" maxlength="20" data-p="gname"></div>
+  <div style="padding:0 18px 8px;color:var(--tx2);font-size:13px" data-i="gpick"></div><div id="gl"></div>
+  <div style="padding:6px 12px"><button class="btn" style="width:100%;padding:14px;font-size:17px" onclick="once('mk',mkGroup)" data-i="gmake"></button></div></div></div>
+<div id="gi" class="pg ov h" style="z-index:13"><div class="top"><button class="ib" onclick="$('#gi').classList.add('h')" aria-label="back"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><span style="font-weight:700;font-size:18px" data-i="gmem"></span></div><div id="gib" style="flex:1;overflow:auto;padding:14px 0"></div></div>
+<div id="txp" class="pg ov h" style="z-index:13"><div class="top"><button class="ib" onclick="$('#txp').classList.add('h');renderChats()" aria-label="back"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><span style="font-weight:700;font-size:18px" data-i="tx"></span></div><div id="txl" style="flex:1;overflow:auto;padding:14px 0"></div></div>
+<div id="art" class="pg ov h" style="z-index:13"><div class="top"><button class="ib" onclick="$('#art').classList.add('h')" aria-label="back"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><span style="font-weight:700;font-size:18px" data-i="news"></span></div><div id="artb" style="flex:1;overflow:auto;padding:18px 18px 40px"></div></div>
+<div id="nt" class="h"></div>
+<div id="rpm" class="pg ov h" style="z-index:14">
+  <div class="top"><button class="ib" onclick="$('#rpm').classList.add('h')" aria-label="back"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><span style="font-weight:700;font-size:18px" data-i="rpsend"></span></div>
+  <div style="padding:18px 16px;overflow:auto">
+    <div class="rpc rpc2"><div class="rpi">福</div><div><b id="rpt"></b><small data-i="rpf"></small></div></div>
+    <div class="card"><h3 data-i="rpamt"></h3><div class="flex"><span style="font-size:26px;color:var(--a1)">¥</span><input id="rpa" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" style="font-size:26px;font-weight:700" oninput="updRp()"></div><small id="rpb2" style="color:var(--tx2);display:block;margin-top:8px"></small></div>
+    <div class="card"><h3 data-i="rpnote"></h3><input id="rpn" maxlength="24" oninput="updRp()"></div>
+    <div id="rpbig" class="amt" style="text-align:center;font-size:44px;margin:14px 0"></div>
+    <button class="btn rpbtn" onclick="once('rp',sendRp)" data-i="rpgo"></button>
+  </div>
+</div>
+<div id="rpo" class="pg h" onclick="if(event.target==this){this.classList.add('h');this.innerHTML=''}"></div>
+<div id="lb" class="pg h" onclick="this.classList.add('h')"><img id="lbi"></div>
+<div id="tt" class="h"></div>
+</div>
+
+<script src="./config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-// ====== 只需要改这两行（Supabase → Project Settings → API）======
-const SB_URL='https://fasqrwsofkqoeawyedns.supabase.co';
-const SB_KEY='sb_publishable_GEbncaglTwP5lDrTy-JTuw_97B7D5of';
+const CFG=window.CFG||{};
+const SB_URL=CFG.SB_URL||'',SB_KEY=CFG.SB_KEY||'',TURN=CFG.TURN||[];
+if(!SB_URL||SB_URL.includes('你的')||!SB_KEY||SB_KEY.includes('你的')){document.body.innerHTML='<p style="padding:40px 24px;font:16px/1.7 sans-serif;color:#fff;background:#120a2e;height:100vh">请先创建并填写 config.js（填入 Supabase 的 URL 和 anon key），详见 README。<br>Please create and fill config.js first. See README.</p>';throw new Error('config.js missing')}
 // ==============================================================
 const sb=supabase.createClient(SB_URL,SB_KEY);
 const BUCKET='chat-files';
+const THEMES={gold:['#ffc861','#ff4fa3'],neon:['#4fd8ff','#8a6bff'],red:['#ffd15c','#ff3b5c'],jade:['#7dffcb','#ffd15c'],sakura:['#ff5fa2','#b06bff']};
 const L={
-zh:{chats:'聊天',add:'加好友',me:'我',email:'邮箱',pw:'密码（至少6位）',login:'登录',signup:'注册',uname:'昵称（2-20个字）',setup:'设置昵称',save:'保存',reqs:'好友申请',accept:'同意',reject:'拒绝',nofr:'还没有好友，去“加好友”搜索吧',search:'输入对方昵称',go:'搜索',none:'没有找到',exists:'已经申请过或已是好友',sent:'好友申请已发送',taken:'这个昵称已被使用',nomic:'无法使用麦克风/摄像头，请允许权限',calling:'正在呼叫 ',inv:' 邀请你通话',msg:'输入消息',send:'发送',logout:'退出登录',lang:'语言',checkmail:'请先到邮箱点击验证链接，再登录',invalid:'昵称需要2-20个字',tap:'点击头像可更换',busy:'对方正在通话中'},
-en:{chats:'Chats',add:'Add friend',me:'Me',email:'Email',pw:'Password (6+ chars)',login:'Log in',signup:'Sign up',uname:'Username (2-20 chars)',setup:'Choose a username',save:'Save',reqs:'Friend requests',accept:'Accept',reject:'Decline',nofr:'No friends yet. Go to "Add friend" to search.',search:'Enter a username',go:'Search',none:'No users found',exists:'Already requested or already friends',sent:'Friend request sent',taken:'That username is taken',nomic:'Cannot use microphone/camera. Please allow access.',calling:'Calling ',inv:' is calling you',msg:'Message',send:'Send',logout:'Log out',lang:'Language',checkmail:'Confirm your email first, then log in',invalid:'Username must be 2-20 characters',tap:'Tap avatar to change',busy:'The other person is busy'}};
-let lang=localStorage.lang||(navigator.language.startsWith('zh')?'zh':'en');
-const t=k=>L[lang][k]||k;
+zh:{chats:'聊天',add:'加好友',me:'我',email:'邮箱',pw:'密码（至少6位）',login:'登录',signup:'注册',uname:'昵称（2-20个字）',setup:'设置昵称',save:'保存',reqs:'条好友申请',accept:'同意',reject:'拒绝',nofr:'还没有好友，去“加好友”搜索吧',search:'输入对方昵称',go:'搜索',none:'没有找到',exists:'已经申请过或已是好友',sent:'好友申请已发送',taken:'这个昵称已被使用',nomic:'无法使用麦克风/摄像头，请允许权限',calling:'正在呼叫…',inv:' 邀请你通话',msg:'输入消息',logout:'退出登录',lang:'语言',checkmail:'请先到邮箱点击验证链接，再登录',invalid:'昵称需要2-20个字',tap:'点击头像可更换',online:'在线',offline:'离线',theme:'主题',effects:'背景动效（关闭更省电）',nick:'昵称',saved:'已保存',pimg:'[图片]',pvoice:'[语音]',ing:'通话中',delq:'确定删除这位好友吗？',themes:['夜金','霓虹蓝','红金','翡翠','樱花'],photo:'图片',rp:'红包',rc:'撤回',rcme:'你撤回了一条消息',rcpeer:'对方撤回了一条消息',reedit:'重新编辑',rcpv:'[已撤回]',rpsend:'发红包',rpamt:'金额',rpnote:'祝福语',rpdef:'恭喜发财，大吉大利',rpgo:'塞钱进红包',rpbad:'请输入正确的金额',rpnomoney:'零钱不足，请到“我”里修改零钱',rpvirt:'发了一个红包',rpf:'红包',rpdone:'已领取',rpget:'领取红包',rpclaimme:'你领取了红包 ¥{n}',rpclaimpeer:'{name} 领取了你的红包 ¥{n}',rpwait:'对方还没有领取',rpgot:'对方已领取 ¥{n}',rpopen:'開',rpsaved:'已存入我的余额',wallet:'我的零钱',setbal:'修改余额',balhint:'',bal:'余额',pvrp:'[红包] ',pvcl:'[红包已领取]',news:'资讯',steps:'运动',ft:'文件传输助手',ftsub:'在手机和电脑之间传文件',tx:'零钱通知',txsub:'零钱变动会在这里提醒你',file:'文件',pfile:'[文件] ',nsearch:'搜索资讯',hot:'热榜',cmt:'评论',ncats:['推荐','生活','科技','健康','财经'],stepsToday:'今日步数',goal:'目标',km:'公里',kcal:'千卡',rank:'好友排行',upd:'更新步数',stepset:'输入今日步数',stepsql:'请先在 Supabase 运行步数建表代码',txin:'红包到账',txout:'发出红包',txadj:'零钱变动',txfrom:'来自 {name} 的红包',txto:'发给 {name} 的红包',txnow:'当前零钱 ¥{b}',toobig:'文件太大（最大50MB）',notx:'暂时还没有零钱变动',newgrp:'发起群聊',ngsub:'选择好友一起聊天',gname:'群名称',gpick:'选择群成员（至少2位好友）',gmake:'创建群聊',gmin:'请至少选择2位好友',people:'人',gmem:'群成员',gowner:'群主',gadd:'添加成员',gaddgo:'添加',gleave:'退出群聊',gdis:'解散群聊',gq:'确定吗？',gnone:'还没有可以选择的好友',copy:'复制',copied:'已复制',typing:'对方正在输入…',tooshort:'录音时间太短（至少1.5秒）',uploading:'上传中…',badtype:'不支持这种文件类型',permdeny:'没有麦克风或摄像头权限，请在浏览器的网站设置里允许后重试',nodev:'没有找到麦克风或摄像头设备',offline2:'网络已断开，暂时无法发送',backonline:'网络已恢复',noanswer:'对方无人接听',busy2:'对方正在通话中',callfail:'通话连接失败，可能是网络限制，请换个网络再试',net:'网络已断开，请检查网络',notice:'通知设置',snd:'消息提示音',ring:'来电铃声',vib:'振动',noti:'桌面通知',nonoti:'这个浏览器不支持桌面通知',notidenied:'通知权限被拒绝',sqlhint:'零钱功能需要先在 Supabase 运行升级SQL',rpexp:'已过期，已退回',rprefd:'红包已过期，金额已退回',rprefmsg:'红包已过期，已退回 ¥{n}',rprefunded:'有红包过期，已退回到零钱',pvrf:'[红包已退回]',txrefund:'红包退回',txrefd:'红包过期未领取',block:'拉黑',unblock:'取消拉黑',delfr:'删除好友',blockedok:'已拉黑',unblocked:'已取消拉黑',blockedmsg:'发送失败，对方可能已拒收',gkick:'移出',pwweak:'密码至少8位，并同时包含字母和数字',showpw:'显示/隐藏密码',relogin:'登录已过期，请重新登录',rpold:'这是旧版红包，已无法领取',fcard:'好友资料'},
+en:{chats:'Chats',add:'Add friend',me:'Me',email:'Email',pw:'Password (6+ chars)',login:'Log in',signup:'Sign up',uname:'Username (2-20 chars)',setup:'Choose a username',save:'Save',reqs:' friend request(s)',accept:'Accept',reject:'Decline',nofr:'No friends yet. Go to "Add friend" to search.',search:'Enter a username',go:'Search',none:'No users found',exists:'Already requested or already friends',sent:'Friend request sent',taken:'That username is taken',nomic:'Cannot use microphone/camera. Please allow access.',calling:'Calling…',inv:' is calling you',msg:'Message',logout:'Log out',lang:'Language',checkmail:'Confirm your email first, then log in',invalid:'Username must be 2-20 characters',tap:'Tap avatar to change',online:'Online',offline:'Offline',theme:'Theme',effects:'Background effects (off saves battery)',nick:'Username',saved:'Saved',pimg:'[Photo]',pvoice:'[Voice]',ing:'In call',delq:'Remove this friend?',themes:['Gold','Neon','Red','Jade','Sakura'],photo:'Photo',rp:'Red packet',rc:'Recall',rcme:'You recalled a message',rcpeer:'The other person recalled a message',reedit:'Edit again',rcpv:'[Recalled]',rpsend:'Send red packet',rpamt:'Amount',rpnote:'Greeting',rpdef:'Good luck and prosperity',rpgo:'Put money in',rpbad:'Enter a valid amount',rpnomoney:'Not enough balance. Change it in the Me tab.',rpvirt:'sent a red packet',rpf:'Red packet',rpdone:'Opened',rpget:'Open red packet',rpclaimme:'You opened a red packet ¥{n}',rpclaimpeer:'{name} opened your red packet ¥{n}',rpwait:'Not opened yet',rpgot:'Opened: ¥{n}',rpopen:'OPEN',rpsaved:'Added to my balance',wallet:'My balance',setbal:'Set balance',balhint:'',bal:'Balance',pvrp:'[Red packet] ',pvcl:'[Red packet opened]',news:'News',steps:'Steps',ft:'File Transfer',ftsub:'Send files between your devices',tx:'Wallet notices',txsub:'Balance changes show up here',file:'File',pfile:'[File] ',nsearch:'Search news',hot:'Trending',cmt:'comments',ncats:['For you','Life','Tech','Health','Finance'],stepsToday:'Steps today',goal:'Goal',km:'km',kcal:'kcal',rank:'Friends ranking',upd:'Update',stepset:'Enter today steps',stepsql:'Run the steps SQL in Supabase first',txin:'Red packet received',txout:'Red packet sent',txadj:'Balance change',txfrom:'From {name}',txto:'To {name}',txnow:'Balance ¥{b}',toobig:'File too large (max 50MB)',notx:'No balance changes yet',newgrp:'New group',ngsub:'Chat with several friends',gname:'Group name',gpick:'Select members (at least 2 friends)',gmake:'Create group',gmin:'Select at least 2 friends',people:'members',gmem:'Members',gowner:'Owner',gadd:'Add members',gaddgo:'Add',gleave:'Leave group',gdis:'Disband group',gq:'Are you sure?',gnone:'No friends to choose from yet',copy:'Copy',copied:'Copied',typing:'typing…',tooshort:'Recording too short (min 1.5s)',uploading:'Uploading…',badtype:'This file type is not allowed',permdeny:'No microphone/camera permission. Allow it in your browser site settings and try again.',nodev:'No microphone or camera found',offline2:'You are offline. Cannot send now.',backonline:'Back online',noanswer:'No answer',busy2:'The other person is busy',callfail:'Call failed. Network may be restricted. Try another network.',net:'Network disconnected',notice:'Notifications',snd:'Message sound',ring:'Ringtone',vib:'Vibration',noti:'Desktop notifications',nonoti:'This browser does not support notifications',notidenied:'Notification permission denied',sqlhint:'Run the upgrade SQL in Supabase first',rpexp:'Expired and refunded',rprefd:'Expired. The amount was refunded.',rprefmsg:'Red packet expired. Refunded ¥{n}',rprefunded:'A red packet expired and was refunded',pvrf:'[Red packet refunded]',txrefund:'Red packet refund',txrefd:'Expired, not opened',block:'Block',unblock:'Unblock',delfr:'Remove friend',blockedok:'Blocked',unblocked:'Unblocked',blockedmsg:'Send failed. You may be blocked.',gkick:'Remove',pwweak:'Password: 8+ characters with letters and numbers',showpw:'Show/hide password',relogin:'Session expired. Please log in again.',rpold:'This is an old red packet and cannot be opened',fcard:'Profile'}};
+let lang=localStorage.lang||(navigator.language.startsWith('zh')?'zh':'en'),theme=localStorage.theme||'gold',fx=localStorage.fx!='0';
+const t=k=>L[lang][k]??k;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const av=p=>p.avatar_url?`<img class="av" src="${esc(p.avatar_url)}">`:`<div class="av" style="background:hsl(${[...p.username].reduce((a,c)=>a+c.charCodeAt(0),0)*47%360},45%,55%)">${esc(p.username[0].toUpperCase())}</div>`;
-let me,prof,friends=[],reqs=[],rel=[],unread={},cur=null,tab='chats',subbed=false,tmr;
+const av=(p,s=44,r=0)=>p.group?`<div class="av${r?' rg':''}" style="width:${s}px;height:${s}px"><div class="in" style="background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff"><svg class="i" viewBox="0 0 24 24" style="width:${Math.round(s*.5)}px;height:${Math.round(s*.5)}px"><path d="M16 21v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-1a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div></div>`:p.special?`<div class="av${r?' rg':''}" style="width:${s}px;height:${s}px"><div class="in" style="background:linear-gradient(135deg,#4fd8ff,#8a6bff);color:#fff"><svg class="i" viewBox="0 0 24 24" style="width:${Math.round(s*.5)}px;height:${Math.round(s*.5)}px"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div></div>`:`<div class="av${r?' rg':''}" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.4)}px"><div class="in">${p.avatar_url&&okUrl(p.avatar_url)?`<img src="${esc(p.avatar_url)}">`:esc(p.username[0].toUpperCase())}</div></div>`;
+let me,prof,friends=[],reqs=[],rel=[],last={},online=new Set(),unread={},cur=null,tab='chats',subbed=false,tmr;
+const RC=new Set(),MS={},opened={};let TX=[],ntm,groups=[],GM={},RPS={},BL=new Set(),walletOk=true,lastTxId=0,txInit=false,typingUntil=0,chatDay='',oldest=null,hasMore=false,loadingMore=false,curKey=null,refTimer=null,syncing=false,tmpN=0,lastTyping=0;const DR={},PAGE=30,LK={};let bal=0;
+const SET=Object.assign({snd:1,ring:1,vib:1,noti:0},JSON.parse(localStorage.getItem('set')||'{}'));const saveSet=()=>localStorage.setItem('set',JSON.stringify(SET));
+async function once(k,fn){if(LK[k])return;LK[k]=1;try{return await fn()}finally{LK[k]=0}}
+const okUrl=u=>typeof u=='string'&&u.startsWith(SB_URL);
 
+(function(){let h='';for(let i=1;i<=22;i++){const s=2+i%3,c='var(--a'+(i%3+1)+')';h+=`<span class="pt" style="left:${(i*41)%97}%;width:${s}px;height:${s}px;animation-duration:${6+i%7}s;animation-delay:-${i%9}s;background:${c};box-shadow:0 0 10px ${c}"></span>`}
+$('#fx').innerHTML=`<div class="orb" style="right:-60px;top:100px;width:240px;height:240px;background:var(--a2)"></div><div class="orb" style="left:-80px;top:440px;width:260px;height:260px;background:var(--a3);animation-duration:9s,15s"></div><div class="orb" style="left:80px;top:-80px;width:220px;height:200px;background:var(--a1);animation-duration:8s,13s"></div>`+h})();
+$('#emo').innerHTML=[...'😀😂🥰😍😎🤔😭😡👍👏🙏💪🎉🔥💖✨🌹🍻🎂🌙☕🍜🚀💯'].map(e=>`<span onclick="$('#inp').value+='${e}'">${e}</span>`).join('');
+
+function applyTheme(){document.documentElement.dataset.t=theme;document.body.classList.toggle('nofx',!fx)}
 function toast(s){const e=$('#tt');e.textContent=s;e.classList.remove('h');clearTimeout(tmr);tmr=setTimeout(()=>e.classList.add('h'),2800)}
 function show(id){['auth','setup','app'].forEach(x=>$('#'+x).classList.toggle('h',x!=id))}
 function setLang(l){lang=l;localStorage.lang=l;document.documentElement.lang=l;applyLang()}
@@ -129,6 +301,12 @@ function applyLang(){
   document.querySelectorAll('[data-p]').forEach(e=>e.placeholder=t(e.dataset.p));
   if(prof)setTab(tab);
 }
+const fmt=s=>{const d=new Date(s),n=new Date();return d.toDateString()==n.toDateString()?d.toTimeString().slice(0,5):(d.getMonth()+1)+'-'+d.getDate()};
+const pj=s=>{try{return JSON.parse(s)||{}}catch(e){return{}}};
+const isRc=m=>m.recalled||RC.has(m.id);
+const pv=m=>!m?'':isRc(m)&&m.type!='redpacket'?t('rcpv'):m.type=='file'?t('pfile')+(pj(m.content).name||''):m.type=='image'?t('pimg'):m.type=='voice'?t('pvoice'):m.type=='redpacket'?t('pvrp')+(pj(m.content).note||''):m.type=='rpclaim'?t('pvcl'):m.type=='rprefund'?t('pvrf'):m.content;
+function beep(){if(SET.snd)tone(880,.25);if(SET.vib&&navigator.vibrate)try{navigator.vibrate(60)}catch(e){}}
+function updTitle(){const n=Object.values(unread).reduce((a,b)=>a+b,0);document.title=(n?`(${n>99?'99+':n}) `:'')+'Chat'}
 
 // ---------- 登录注册 ----------
 async function login(){
@@ -136,7 +314,9 @@ async function login(){
   if(error)return toast(error.message);start(data.user);
 }
 async function signup(){
-  const {data,error}=await sb.auth.signUp({email:$('#em').value.trim(),password:$('#pw').value});
+  const em=$('#em').value.trim(),pw=$('#pw').value;
+  if(pw.length<8||!/[a-zA-Z]/.test(pw)||!/[0-9]/.test(pw))return toast(t('pwweak'));
+  const {data,error}=await sb.auth.signUp({email:em,password:pw});
   if(error)return toast(error.message);
   if(!data.session)return toast(t('checkmail'));start(data.user);
 }
@@ -145,7 +325,11 @@ async function start(u){
   me=u;
   const {data}=await sb.from('profiles').select('*').eq('id',u.id).maybeSingle();
   if(!data)return show('setup');
-  prof=data;show('app');await loadRel();subscribe();setTab(tab);
+  prof=data;try{JSON.parse(localStorage.getItem('rc_'+me.id)||'[]').forEach(x=>RC.add(x))}catch(e){}
+  show('app');
+  await Promise.all([loadRel(),loadLast(),loadUnread(),loadBlocks()]);
+  await loadGroups();await loadWallet();subscribe();setTab(tab);updTitle();
+  runRefund();if(!refTimer)refTimer=setInterval(runRefund,300000);
 }
 async function saveName(){
   const n=$('#nm').value.trim();
@@ -165,14 +349,25 @@ async function loadRel(){
   const pm=Object.fromEntries(ps.map(p=>[p.id,p]));
   friends=rel.filter(r=>r.status=='accepted').map(r=>pm[other(r)]).filter(Boolean);
   reqs=rel.filter(r=>r.status=='pending'&&r.addressee==me.id).map(r=>({id:r.id,p:pm[r.requester]})).filter(r=>r.p);
-  if(tab=='chats')renderChats();
+  if(tab=='chats'&&prof)renderChats();
+}
+async function loadLast(){
+  const {data}=await sb.from('messages').select('*').or(`sender.eq.${me.id},receiver.eq.${me.id}`).order('created_at',{ascending:false}).limit(300);
+  last={};(data||[]).forEach(m=>{const k=m.sender==me.id?m.receiver:m.sender;if(!last[k])last[k]=m});
 }
 async function acc(id){await sb.from('friendships').update({status:'accepted'}).eq('id',id);loadRel()}
 async function rej(id){await sb.from('friendships').delete().eq('id',id);loadRel()}
+async function delFriend(){
+  if(cur&&cur.group)return openGi();
+  if(!cur||!confirm(t('delq')))return;
+  const r=rel.find(r=>r.requester==cur.id||r.addressee==cur.id);
+  if(r)await sb.from('friendships').delete().eq('id',r.id);
+  $('#fc').classList.add('h');closeChat();loadRel();
+}
 async function srch(){
   const q=$('#q').value.trim();if(!q)return;
   const {data}=await sb.from('profiles').select('*').ilike('username',q+'%').neq('id',me.id).limit(10);
-  $('#res').innerHTML=(data||[]).map(p=>`<div class="row">${av(p)}<b>${esc(p.username)}</b><button onclick="addF('${p.id}')">${t('add')}</button></div>`).join('')||`<p class="empty">${t('none')}</p>`;
+  $('#res').innerHTML=(data||[]).map(p=>`<div class="row" style="cursor:default">${av(p,48,1)}<div class="mid"><b>${esc(p.username)}</b></div><button class="btn" onclick="once('af${p.id}',()=>addF('${p.id}'))">${t('add')}</button></div>`).join('')||`<p class="empty">${t('none')}</p>`;
 }
 async function addF(id){
   if(rel.some(r=>r.requester==id||r.addressee==id))return toast(t('exists'));
@@ -184,152 +379,712 @@ async function addF(id){
 // ---------- 页面渲染 ----------
 function setTab(x){
   tab=x;$('#hdr').textContent=t(x);
-  ['chats','add','me'].forEach(k=>$('#tb-'+k).classList.toggle('on',k==x));
+  ['chats','news','steps','add','me'].forEach(k=>$('#tb-'+k).classList.toggle('on',k==x));
   if(x=='chats')renderChats();
-  else if(x=='add')$('#main').innerHTML=`<div class="sr"><input id="q" placeholder="${t('search')}" onkeydown="if(event.key=='Enter')srch()"><button onclick="srch()">${t('go')}</button></div><div id="res"></div>`;
+  else if(x=='add')$('#main').innerHTML=`<div class="sb"><input id="q" placeholder="${t('search')}" onkeydown="if(event.key=='Enter')srch()"><button class="btn" onclick="srch()">${t('go')}</button></div><div id="res"></div>`;
+  else if(x=='news')renderNews();
+  else if(x=='steps'){renderSteps();loadSteps()}
   else renderMe();
 }
 function renderChats(){
-  $('#main').innerHTML=(reqs.length?`<div class="sec">${t('reqs')}</div>`+reqs.map(r=>`<div class="row">${av(r.p)}<b>${esc(r.p.username)}</b><button onclick="acc(${r.id})">${t('accept')}</button><button class="g" onclick="rej(${r.id})">${t('reject')}</button></div>`).join(''):'')
-  +(friends.length?friends.map(f=>`<div class="row" onclick="openChat('${f.id}')">${av(f)}<b>${esc(f.username)}</b>${unread[f.id]?`<i class="bd">${unread[f.id]}</i>`:''}</div>`).join(''):`<p class="empty">${t('nofr')}</p>`);
+  const list=[...friends,...groups.map(g=>({id:'g'+g.id,gid:g.id,group:1,username:g.name}))].sort((a,b)=>(last[b.id]?.created_at||'').localeCompare(last[a.id]?.created_at||''));
+  $('#main').innerHTML=pinned()+ngRow()+(reqs.length?`<div class="req"><b>${reqs.length}${t('reqs')}</b>${reqs.map(r=>`<div class="row" style="cursor:default">${av(r.p,44)}<div class="mid"><b>${esc(r.p.username)}</b></div><button class="btn" onclick="acc(${r.id})">${t('accept')}</button><button class="btn g" onclick="rej(${r.id})">${t('reject')}</button></div>`).join('')}</div>`:'')
+  +(list.length?list.map((f,i)=>{const m=last[f.id];return `<div class="row" style="animation-delay:${i*.06}s" onclick="${f.group?`openGroup(${f.gid})`:`openChat('${f.id}')`}"><div class="swp" style="animation-delay:${i*.8}s"></div>${av(f,54,1)}<div class="mid"><b>${esc(f.username)}${f.group?'':`<i class="dot${online.has(f.id)?' on':''}"></i>`}</b><small>${esc((f.group&&m&&m.sender!=me.id?memb2(f.gid,m.sender)+': ':'')+pv(m))}</small></div><div class="rt"><small>${m?fmt(m.created_at):''}</small>${unread[f.id]?`<i class="bd">${unread[f.id]}</i>`:''}</div></div>`}).join(''):`<p class="empty">${t('nofr')}</p>`);
 }
 function renderMe(){
-  $('#main').innerHTML=`<div class="big"><label>${av(prof)}<input type="file" accept="image/*" hidden onchange="setAvatar(this.files[0])"></label><b>${esc(prof.username)}</b><small style="color:#999">${t('tap')}</small></div>
-  <div class="row"><b>${t('lang')}</b><button class="${lang=='zh'?'':'g'}" onclick="setLang('zh')">中文</button><button class="${lang=='en'?'':'g'}" onclick="setLang('en')">English</button></div>
-  <div style="padding:20px"><button class="g" style="width:100%" onclick="logout()">${t('logout')}</button></div>`;
+  const tg=(k)=>`<button class="tg${SET[k]?' on':''}" onclick="togSet('${k}')" aria-label="${k}"></button>`;
+  const row=(k)=>`<div class="flex" style="justify-content:space-between;padding:6px 0"><span>${t(k)}</span>${tg(k)}</div>`;
+  $('#main').innerHTML=`<div class="big"><label style="cursor:pointer">${av(prof,92,1)}<input type="file" accept="image/*" hidden onchange="setAvatar(this.files[0])"></label><b style="font-size:20px">${esc(prof.username)}</b><small style="color:var(--tx2)">${t('tap')}</small></div>
+  <div class="card"><h3>${t('nick')}</h3><div class="flex"><input id="nn" value="${esc(prof.username)}" maxlength="20"><button class="btn" onclick="saveNick()">${t('save')}</button></div></div>
+  <div class="card"><h3>${t('wallet')}</h3><div class="amt" id="wb">¥ ${bal.toFixed(2)}</div>${walletOk?'':`<small style="color:#ff6b7a;display:block;margin-bottom:8px">${t('sqlhint')}</small>`}<div class="flex"><input id="bi" type="number" step="0.01" min="0" inputmode="decimal" value="${bal}"><button class="btn" onclick="once('bal',setBal)">${t('setbal')}</button></div></div>
+  <div class="card"><h3>${t('theme')}</h3><div class="sw">${Object.keys(THEMES).map((k,i)=>`<button class="${k==theme?'on':''}" style="background:linear-gradient(135deg,${THEMES[k][0]},${THEMES[k][1]});color:${THEMES[k][0]}" onclick="setTheme('${k}')" aria-label="${t('themes')[i]}"></button>`).join('')}</div><small style="color:var(--tx2);display:block;margin-top:8px">${t('themes')[Object.keys(THEMES).indexOf(theme)]}</small></div>
+  <div class="card"><h3>${t('notice')}</h3>${row('snd')}${row('ring')}${row('vib')}${row('noti')}</div>
+  <div class="card"><div class="flex" style="justify-content:space-between"><span>${t('effects')}</span><button class="tg${fx?' on':''}" onclick="fx=!fx;localStorage.fx=fx?1:0;applyTheme();renderMe()" aria-label="effects"></button></div></div>
+  <div class="card"><div class="flex" style="justify-content:space-between"><span>${t('lang')}</span><span class="flex"><button class="btn${lang=='zh'?'':' g'}" onclick="setLang('zh')">中文</button><button class="btn${lang=='en'?'':' g'}" onclick="setLang('en')">English</button></span></div></div>
+  <div style="padding:6px 12px"><button class="btn g" style="width:100%" onclick="logout()">${t('logout')}</button></div>`;
+}
+function setTheme(k){theme=k;localStorage.theme=k;applyTheme();renderMe()}
+async function saveNick(){
+  const n=$('#nn').value.trim();if(n.length<2||n.length>20)return toast(t('invalid'));
+  const {error}=await sb.from('profiles').update({username:n}).eq('id',me.id);
+  if(error)return toast(error.code=='23505'?t('taken'):error.message);
+  prof.username=n;toast(t('saved'));renderMe();
 }
 
 // ---------- 文件上传 ----------
 async function up(folder,blob,ext,ct){
   const path=`${folder}/${me.id}/${Date.now()}.${ext}`;
   const {error}=await sb.storage.from(BUCKET).upload(path,blob,{contentType:ct});
-  if(error){toast(error.message);return null}
+  if(error){toast(errMsg(error));return null}
   return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
 }
 const ext=f=>(f.name.split('.').pop()||'jpg').toLowerCase();
 async function setAvatar(f){
-  if(!f)return;const u=await up('avatars',f,ext(f),f.type);if(!u)return;
+  if(!f)return;
+  const b=await compress(f,512,.85);
+  const u=await up('avatars',b,b===f?fext(f):'jpg',b===f?(f.type||'image/jpeg'):'image/jpeg');if(!u)return;
   await sb.from('profiles').update({avatar_url:u}).eq('id',me.id);prof.avatar_url=u;renderMe();
 }
 
 // ---------- 聊天 ----------
-async function openChat(id){
-  cur=friends.find(f=>f.id==id);unread[id]=0;renderChats();
-  $('#ctitle').textContent=cur.username;$('#msgs').innerHTML='';$('#chat').classList.remove('h');
-  const a=me.id,b=id;
-  const {data}=await sb.from('messages').select('*').or(`and(sender.eq.${a},receiver.eq.${b}),and(sender.eq.${b},receiver.eq.${a})`).order('created_at',{ascending:true}).limit(200);
-  (data||[]).forEach(addMsg);
+function updHead(){
+  if(!cur)return;
+  const sp=cur.special,ty=typingUntil>Date.now();
+  ['hc','hv','mrp'].forEach(i=>$('#'+i).classList.toggle('h',!!(sp||cur.group)));
+  $('#hd').classList.toggle('h',!!sp);
+  $('#hd').innerHTML=cur.group?'<svg class="i" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>':'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>';
+  const sub=cur.group?(GM[cur.gid]||[]).length+' '+t('people'):sp?t('ftsub'):ty?t('typing'):online.has(cur.id)?t('online'):t('offline');
+  const col=cur.group||sp?'var(--tx2)':(ty||online.has(cur.id)?'var(--a3)':'var(--tx2)');
+  $('#chd').innerHTML=`${av(cur,40,1)}<div style="min-width:0"><b>${esc(cur.username)}</b><small style="display:block;font-size:12px;color:${col}">${sub}</small></div>`;
 }
-function closeChat(){cur=null;$('#chat').classList.add('h')}
-function addMsg(m){
-  const mine=m.sender==me.id,p=mine?prof:cur;
-  const body=m.type=='image'?`<img class="pic" src="${esc(m.content)}" onclick="window.open(this.src)">`:m.type=='voice'?`<audio controls src="${esc(m.content)}"></audio>`:esc(m.content);
-  const d=document.createElement('div');d.className='m'+(mine?' me':'');
-  d.innerHTML=`${av(p)}<div class="bb">${body}</div>`;
-  $('#msgs').append(d);$('#msgs').scrollTop=1e9;
+async function openChat(id){
+  saveDraft();
+  cur=id==me.id?{id:me.id,username:t('ft'),special:1}:friends.find(f=>f.id==id);
+  if(!cur)return;
+  curKey=cur.id;unread[id]=0;updTitle();renderChats();updHead();loadDraft();
+  $('#emo').classList.add('h');$('#more').classList.add('h');$('#chat').classList.remove('h');
+  await loadMsgs();markRead(cur.id);
+}
+function closeChat(){saveDraft();cur=null;curKey=null;$('#chat').classList.add('h');renderChats()}
+function openImg(u){$('#lbi').src=u;$('#lb').classList.remove('h')}
+function addMsg(m,pre){
+  MS[m.id]=m;
+  const d=document.createElement('div');d.dataset.mid=m.id;
+  if(m.type=='rpclaim'||m.type=='rprefund'){
+    const c=pj(m.content);
+    RPS[c.mid]=Object.assign(RPS[c.mid]||{},{status:m.type=='rpclaim'?'claimed':'refunded'});
+    d.className='sys';
+    d.textContent=m.type=='rprefund'?t('rprefmsg').replace('{n}',c.amt):(m.sender==me.id?t('rpclaimme'):t('rpclaimpeer').replace('{name}',cur.group?memb(m.sender).username:cur.username)).replace('{n}',c.amt);
+    place(d,pre===true,m);paintById(c.mid);return;
+  }
+  paint(d,m);place(d,pre===true,m);
 }
 async function send(type,content){
-  const {data,error}=await sb.from('messages').insert({sender:me.id,receiver:cur.id,type,content}).select().single();
-  if(error)return toast(error.message);addMsg(data);
+  if(!navigator.onLine)return toast(t('offline2'));
+  const tmp={id:'tmp'+(++tmpN),sender:me.id,type,content,created_at:new Date().toISOString(),_pending:1,gid:cur.group?cur.gid:undefined};
+  addMsg(tmp);
+  return doSend(tmp,cur);
 }
 function sendText(){const i=$('#inp'),v=i.value.trim();if(!v||!cur)return;i.value='';send('text',v)}
-async function sendImg(f){if(!f||!cur)return;const u=await up('images',f,ext(f),f.type);if(u)send('image',u)}
+async function sendImg(f){
+  if(!f||!cur)return;
+  toast(t('uploading'));
+  const b=await compress(f,1600,.82);
+  const u=await up('images',b,b===f?fext(f):'jpg',b===f?(f.type||'image/jpeg'):'image/jpeg');
+  if(u)send('image',u);
+}
 function onMsg(m){
-  if(cur&&cur.id==m.sender)addMsg(m);
-  else{unread[m.sender]=(unread[m.sender]||0)+1;if(tab=='chats')renderChats()}
+  if(m.sender==me.id)return;
+  last[m.sender]=m;
+  const f=friends.find(x=>x.id==m.sender);
+  if(m.type=='redpacket')loadRps([m]).then(()=>paintById(m.id));
+  if(cur&&cur.id==m.sender){addMsg(m);if(!document.hidden)markRead(m.sender);else{beep();pushNoti(f?f.username:'Chat',pv(m),'c'+m.sender,()=>f&&openChat(f.id))}}
+  else{unread[m.sender]=(unread[m.sender]||0)+1;beep();updTitle();pushNoti(f?f.username:'Chat',pv(m),'c'+m.sender,()=>f&&openChat(f.id))}
+  if(tab=='chats')renderChats();
 }
 
 // ---------- 语音消息（点一下开始，再点一下发送）----------
-let rec,chunks=[];
+let rec,chunks=[],recCancel=false;
 async function toggleRec(){
   const b=$('#mic');
   if(rec&&rec.state=='recording'){rec.stop();return}
   try{
     const s=await navigator.mediaDevices.getUserMedia({audio:true});
     const mt=MediaRecorder.isTypeSupported('audio/webm')?'audio/webm':'audio/mp4';
-    rec=new MediaRecorder(s,{mimeType:mt});chunks=[];
+    rec=new MediaRecorder(s,{mimeType:mt});chunks=[];recCancel=false;const t0=Date.now();
     rec.ondataavailable=e=>chunks.push(e.data);
     rec.onstop=async()=>{
       s.getTracks().forEach(x=>x.stop());b.classList.remove('rec');
-      const blob=new Blob(chunks,{type:mt});if(blob.size<1500||!cur)return;
+      if(recCancel||!cur)return;
+      const blob=new Blob(chunks,{type:mt});
+      if(blob.size<1500||Date.now()-t0<1500)return toast(t('tooshort'));
+      toast(t('uploading'));
       const u=await up('voice',blob,mt.includes('webm')?'webm':'m4a',mt);if(u)send('voice',u);
     };
     rec.start();b.classList.add('rec');
-  }catch(e){toast(t('nomic'))}
+  }catch(e){toast(permMsg(e))}
 }
 
-// ---------- 实时订阅 ----------
-let sig;
+// ---------- 实时订阅 + 在线状态 ----------
+let sig,pres,firstSub=true,hiddenAt=Date.now();
 function subscribe(){
   if(subbed)return;subbed=true;
   sb.channel('db-'+me.id)
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'receiver=eq.'+me.id},e=>onMsg(e.new))
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages',filter:'receiver=eq.'+me.id},e=>onMsgUpd(e.new,false))
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages',filter:'sender=eq.'+me.id},e=>onMsgUpd(e.new,false))
     .on('postgres_changes',{event:'*',schema:'public',table:'friendships',filter:'addressee=eq.'+me.id},loadRel)
     .on('postgres_changes',{event:'*',schema:'public',table:'friendships',filter:'requester=eq.'+me.id},loadRel)
-    .subscribe();
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'group_messages'},e=>onGMsg(e.new))
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'group_messages'},e=>onMsgUpd(e.new,true))
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'group_members',filter:'user_id=eq.'+me.id},async()=>{await loadGroups();if(tab=='chats')renderChats()})
+    .subscribe(s=>{if(s=='SUBSCRIBED'){if(!firstSub)resync();firstSub=false}});
+  sb.channel('w-'+me.id).on('postgres_changes',{event:'*',schema:'public',table:'wallets',filter:'user_id=eq.'+me.id},()=>refreshWallet()).subscribe();
   sig=sb.channel('sig-'+me.id).on('broadcast',{event:'sig'},e=>onSig(e.payload)).subscribe();
+  pres=sb.channel('online',{config:{presence:{key:me.id}}});
+  pres.on('presence',{event:'sync'},()=>{online=new Set(Object.keys(pres.presenceState()));if(tab=='chats')renderChats();updHead()})
+    .subscribe(s=>{if(s=='SUBSCRIBED')pres.track({t:Date.now()})});
 }
 
 // ---------- 语音/视频通话（WebRTC，信号通过 Supabase Realtime 传递）----------
-const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun.cloudflare.com:3478'}]};
-let pc,stream,peer,pend=[],offerIn=null,chs={};
+const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun.cloudflare.com:3478'},...TURN]};
+let pc,stream,peer,pend=[],offerIn=null,chs={},facing='user',isVideo=false,tint=null,tsec=0,inTO=null,outTO=null;
 const chan=to=>chs[to]||(chs[to]=new Promise(r=>{const c=sb.channel('sig-'+to);c.subscribe(s=>{if(s=='SUBSCRIBED')r(c)})}));
 async function sendSig(to,p){(await chan(to)).send({type:'broadcast',event:'sig',payload:{...p,from:me.id}})}
 async function media(video){
-  try{stream=await navigator.mediaDevices.getUserMedia({audio:true,video:video?{facingMode:'user'}:false});return true}
-  catch(e){toast(t('nomic'));return false}
+  facing='user';
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:true,video:video?{facingMode:{ideal:'user'},width:{ideal:720}}:false});return true}
+  catch(e){toast(permMsg(e));return false}
 }
 function showCall(video,txt,incoming){
-  $('#call').classList.remove('h');$('#call').classList.toggle('a',!video);
-  $('#cs').textContent=txt;$('#ca').classList.toggle('h',!incoming);
+  isVideo=video;$('#call').classList.remove('h');
+  $('#cn').textContent=peer.username;$('#cs').textContent=txt;
+  $('#cav').innerHTML=`<div class="ring"></div><div class="ring" style="animation-delay:.8s;border-color:var(--a2)"></div><div class="ring" style="animation-delay:1.6s;border-color:var(--a3)"></div>${av(peer,104,1)}`;
+  $('#cav').classList.remove('h');$('#rv').classList.add('v0');
+  $('#lv').classList.toggle('h',!video||incoming);
+  $('#ca').classList.toggle('h',!incoming);
+  $('#cm').classList.toggle('h',incoming);
+  $('#cc').classList.toggle('h',!video||incoming);$('#cf').classList.toggle('h',!video||incoming);
+  ['cm','cc'].forEach(i=>$('#'+i).classList.remove('off'));
 }
 function mkPc(){
   pc=new RTCPeerConnection(ICE);
   stream.getTracks().forEach(x=>pc.addTrack(x,stream));
   pc.onicecandidate=e=>e.candidate&&sendSig(peer.id,{k:'ice',c:e.candidate});
-  pc.ontrack=e=>{$('#rv').srcObject=e.streams[0];$('#cs').textContent=''};
-  pc.onconnectionstatechange=()=>{if(pc&&pc.connectionState=='failed')endCall(true)};
-  $('#lv').srcObject=stream;
+  pc.ontrack=e=>{
+    $('#rv').srcObject=e.streams[0];clearTimeout(outTO);
+    if(e.track.kind=='video'){$('#rv').classList.remove('v0');$('#cav').classList.add('h')}
+    if(!tint){tsec=0;$('#cs').textContent='00:00';tint=setInterval(()=>{tsec++;$('#cs').textContent=String(Math.floor(tsec/60)).padStart(2,'0')+':'+String(tsec%60).padStart(2,'0')},1000)}
+  };
+  pc.onconnectionstatechange=()=>{if(pc&&pc.connectionState=='failed'){toast(t('callfail'));endCall(true)}};
+  $('#lv').srcObject=stream;$('#lv').style.transform='scaleX(-1)';
 }
 async function startCall(video){
-  if(pc||!cur)return;peer=cur;
+  if(pc||offerIn||!cur||cur.group||cur.special)return;
+  if(!navigator.onLine)return toast(t('offline2'));
+  peer=cur;
   if(!await media(video))return;
-  showCall(video,t('calling')+peer.username,false);
-  mkPc();
+  showCall(video,t('calling'),false);mkPc();
+  outTO=setTimeout(()=>{if(pc&&!tint){toast(t('noanswer'));endCall(true)}},30000);
   const o=await pc.createOffer();await pc.setLocalDescription(o);
   sendSig(peer.id,{k:'offer',video,sdp:pc.localDescription});
 }
 async function onSig(p){
+  if(p.k=='typing'){if(cur&&cur.id==p.from){typingUntil=Date.now()+3000;updHead();setTimeout(updHead,3100)}return}
   if(p.k=='offer'){
-    const f=friends.find(x=>x.id==p.from);if(!f)return;
-    if(pc||offerIn)return sendSig(p.from,{k:'bye'});
-    offerIn=p;peer=f;pend=[];
+    const f=friends.find(x=>x.id==p.from);if(!f||BL.has(p.from))return;
+    if(pc||offerIn)return sendSig(p.from,{k:'bye',busy:1});
+    offerIn=p;peer=f;pend=[];startRing();
+    inTO=setTimeout(()=>{if(offerIn){sendSig(peer.id,{k:'bye'});endCall(false)}},30000);
     showCall(p.video,f.username+t('inv'),true);
+    pushNoti(f.username,t('inv').trim(),'call'+f.id,()=>{});
   }else if(peer&&p.from==peer.id){
     if(p.k=='answer'&&pc)await pc.setRemoteDescription(p.sdp);
     else if(p.k=='ice'){if(pc&&pc.remoteDescription)pc.addIceCandidate(p.c).catch(()=>{});else pend.push(p.c)}
-    else if(p.k=='bye')endCall(false);
+    else if(p.k=='bye'){if(p.busy)toast(t('busy2'));endCall(false)}
   }
 }
 async function acceptCall(){
+  stopRing();clearTimeout(inTO);
   const p=offerIn;offerIn=null;
   if(!await media(p.video)){sendSig(peer.id,{k:'bye'});return endCall(false)}
-  showCall(p.video,'',false);mkPc();
+  showCall(p.video,t('ing'),false);mkPc();
   await pc.setRemoteDescription(p.sdp);
   pend.forEach(c=>pc.addIceCandidate(c).catch(()=>{}));pend=[];
   const a=await pc.createAnswer();await pc.setLocalDescription(a);
   sendSig(peer.id,{k:'answer',sdp:pc.localDescription});
 }
-function hangup(){endCall(true)}
+function toggleMute(b){const tr=stream&&stream.getAudioTracks()[0];if(!tr)return;tr.enabled=!tr.enabled;b.classList.toggle('off',!tr.enabled)}
+function toggleCam(b){const tr=stream&&stream.getVideoTracks()[0];if(!tr)return;tr.enabled=!tr.enabled;b.classList.toggle('off',!tr.enabled)}
+async function flipCam(){
+  if(!stream||!pc)return;
+  const nf=facing=='user'?'environment':'user';
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:nf}}});
+    const nt=s.getVideoTracks()[0],ot=stream.getVideoTracks()[0];
+    const sd=pc.getSenders().find(x=>x.track&&x.track.kind=='video');
+    if(sd)await sd.replaceTrack(nt);
+    if(ot){stream.removeTrack(ot);ot.stop()}
+    stream.addTrack(nt);facing=nf;
+    $('#lv').srcObject=stream;$('#lv').style.transform=nf=='user'?'scaleX(-1)':'none';
+  }catch(e){toast(t('nomic'))}
+}
+function hangup(){if(offerIn){sendSig(peer.id,{k:'bye'})}endCall(!offerIn)}
 function endCall(notify){
   if(notify&&peer)sendSig(peer.id,{k:'bye'});
+  stopRing();clearTimeout(inTO);clearTimeout(outTO);
   if(pc){pc.close();pc=null}
   if(stream){stream.getTracks().forEach(x=>x.stop());stream=null}
+  clearInterval(tint);tint=null;
   offerIn=null;pend=[];$('#rv').srcObject=null;$('#lv').srcObject=null;$('#call').classList.add('h');
 }
 
+// ---------- 撤回（只在页面上撤回，数据库里的消息不会删除）----------
+function saveRC(){localStorage.setItem('rc_'+me.id,JSON.stringify([...RC]))}
+function paintById(id){const el=document.querySelector('[data-mid="'+id+'"]');if(el&&MS[id]&&cur)paint(el,MS[id])}
+function paint(d,m){
+  const mine=m.sender==me.id,p=mine?prof:(cur.group?memb(m.sender):cur);
+  if(isRc(m)&&m.type!='redpacket'){
+    d.className='sys';
+    d.innerHTML=(mine?t('rcme'):t('rcpeer'))+(mine&&m.type=='text'?` <a onclick="reEdit('${m.id}')">${t('reedit')}</a>`:'');
+    return;
+  }
+  d.className='m'+(mine?' me':'')+(m._pending?' pend':'');
+  const u=okUrl(m.content);
+  const body=m.type=='image'?(u?`<img class="pic" src="${esc(m.content)}" onerror="this.style.display='none'" onclick="openImg(this.src)">`:'[image]'):m.type=='voice'?(u?`<audio controls src="${esc(m.content)}"></audio>`:'[voice]'):m.type=='redpacket'?rpCard(m):m.type=='file'?fileCard(m):linkify(esc(m.content));
+  const meta=m.type=='redpacket'?'':`<div class="tm">${tmf(m.created_at)}${mine&&!m.gid?(m._pending?' …':m.read_at?' <span class="rd">✓✓</span>':' ✓'):''}</div>`;
+  const rp=m.type=='redpacket'?' rp'+(rpSt(m.id)!='pending'||rpExpired(m.id)?' done':''):'';
+  d.innerHTML=`${av(p,38)}<div class="bb${rp}" onclick="bubble('${m.id}',this)">${cur.group&&!mine?`<div class="gn">${esc(p.username)}</div>`:''}${body}${meta}</div>${m._fail?`<button class="rtry" onclick="retry('${m.id}')">!</button>`:''}`;
+}
+function bubble(id,el){
+  const m=MS[id];if(!m||m._pending||m._fail)return;
+  if(m.type=='redpacket')return rpTap(id);
+  const old=el.parentElement.querySelector('.rcw');if(old){old.remove();return}
+  const w=document.createElement('div');w.className='rcw';
+  const add=(txt,fn)=>{const b=document.createElement('button');b.className='rcb';b.textContent=txt;b.onclick=e=>{e.stopPropagation();w.remove();fn()};w.append(b)};
+  if(m.type=='text')add(t('copy'),()=>copyText(m.content));
+  if(m.sender==me.id&&!isRc(m)&&['text','image','voice','file'].includes(m.type))add(t('rc'),()=>recall(m.id));
+  if(w.children.length)el.after(w);
+}
+async function recall(id){
+  const m=MS[id];if(!m)return;
+  const isG=!!m.gid;
+  const {error}=await sb.rpc(isG?'recall_group_message':'recall_message',{p_id:isG?+String(id).slice(1):id});
+  if(error)return toast(rpErr(error));
+  m.recalled=true;paintById(id);Object.keys(last).forEach(k=>{if(last[k]&&last[k].id==id)last[k].recalled=true});
+  if(tab=='chats')renderChats();
+}
+function reEdit(id){$('#inp').value=MS[id].content;$('#inp').focus()}
+function togg(id){const el=$('#'+id),was=el.classList.contains('h');['emo','more'].forEach(x=>$('#'+x).classList.add('h'));if(was)el.classList.remove('h')}
+
+// ---------- 红包 ----------
+async function setBal(){
+  const v=parseFloat($('#bi').value);
+  if(isNaN(v)||v<0||v>100000000)return toast(t('rpbad'));
+  const {error}=await sb.rpc('set_my_balance',{p_value:+v.toFixed(2)});
+  if(error)return toast(rpErr(error));
+  await refreshWallet();toast(t('saved'));renderMe();
+}
+const rpSt=id=>RPS[id]?RPS[id].status:(opened[id]?'claimed':'pending');
+const rpExpired=id=>{const r=RPS[id];return !!(r&&r.status=='pending'&&r.expires_at&&new Date(r.expires_at)<new Date())};
+const rpCard=m=>{const c=pj(m.content),st=rpSt(m.id);return `<div class="rpc"><div class="rpi">福</div><div><b>${esc(c.note)}</b><small>${st=='claimed'?t('rpdone'):st=='refunded'||rpExpired(m.id)?t('rpexp'):t('rpget')}</small></div></div><div class="rpf">${t('rpf')}</div>`};
+function openRpm(){togg('more');$('#rpa').value='';$('#rpn').value='';updRp();$('#rpm').classList.remove('h')}
+function updRp(){
+  const a=parseFloat($('#rpa').value)||0;
+  $('#rpt').textContent=$('#rpn').value.trim()||t('rpdef');
+  $('#rpbig').textContent='¥ '+a.toFixed(2);
+  $('#rpb2').textContent=t('bal')+' ¥'+bal.toFixed(2);
+  const bad=!(a>0)||a>bal||!walletOk,b=$('.rpbtn');b.disabled=bad;b.style.opacity=bad?.45:1;
+}
+async function sendRp(){
+  const a=+(parseFloat($('#rpa').value)||0).toFixed(2);
+  if(!(a>0))return toast(t('rpbad'));
+  if(a>bal)return toast(t('rpnomoney'));
+  const note=$('#rpn').value.trim()||t('rpdef');
+  const {data,error}=await sb.rpc('send_red_packet',{p_receiver:cur.id,p_amount:a,p_note:note});
+  if(error)return toast(rpErr(error));
+  $('#rpm').classList.add('h');
+  await refreshWallet();
+  const {data:m}=await sb.from('messages').select('*').eq('id',data).single();
+  if(m){await loadRps([m]);last[cur.id]=m;addMsg(m)}
+}
+function rpTap(id){
+  const m=MS[id],c=pj(m.content),st=rpSt(id);
+  if(m.sender==me.id)return toast(st=='claimed'?t('rpgot').replace('{n}',c.amt):st=='refunded'||rpExpired(id)?t('rprefd'):t('rpwait'));
+  showRp(m,c,st=='claimed'?{amt:c.amt}:null,st);
+}
+function countUp(el,v){const s=performance.now();requestAnimationFrame(function f(n){const k=Math.min(1,Math.max(0,(n-s)/900));el.textContent=(v*(1-Math.pow(1-k,3))).toFixed(2);if(k<1)requestAnimationFrame(f)})}
+function showRp(m,c,cl,st){
+  const name=esc(m.sender==me.id?prof.username:(cur.group?memb(m.sender).username:cur.username));let h;
+  if(cl){
+    let cf='';for(let i=0;i<28;i++)cf+=`<span class="cf" style="left:${(i*37)%100}%;background:${['#ffd77a','#fff','#ff9ac9','#5ff0c0'][i%4]};animation-duration:${1.6+i%5*.3}s;animation-delay:${i%7*.1}s"></span>`;
+    h=`<div class="env"><div class="cap"><div class="who">${name}</div></div><div class="note" style="margin-top:36px">${esc(c.note)}</div><div class="big2">¥ <span id="cnt">0.00</span></div><div style="margin-top:8px;opacity:.9">${m.sender==me.id?'':t('rpsaved')}</div>${cf}</div>`;
+  }else if(st=='refunded'||rpExpired(m.id)){
+    h=`<div class="env"><div class="cap"><div class="who">${name}</div></div><div class="note" style="margin-top:60px">${t('rpexp')}</div><div style="margin-top:12px;opacity:.85">${esc(c.note)}</div></div>`;
+  }else h=`<div class="env"><div class="cap"><div class="who">${name}</div><small>${t('rpvirt')}</small></div><button id="rpk" class="k" onclick="claim(${m.id})">${t('rpopen')}</button><div class="note">${esc(c.note)}</div></div>`;
+  $('#rpo').innerHTML=h;$('#rpo').classList.remove('h');
+  if(cl)countUp($('#cnt'),+cl.amt);
+}
+async function claim(id){
+  const m=MS[id],c=pj(m.content),k=$('#rpk');
+  if(k)k.classList.add('spin');
+  const {error}=await sb.rpc('claim_red_packet',{p_msg:id});
+  if(error){
+    if(k)k.classList.remove('spin');
+    if(/expired/.test(error.message)){RPS[id]=Object.assign(RPS[id]||{},{status:'pending',expires_at:'2000-01-01'});paintById(id);return showRp(m,c,null,'refunded')}
+    if(/already/.test(error.message)){RPS[id]=Object.assign(RPS[id]||{},{status:'claimed'});paintById(id);return showRp(m,c,{amt:c.amt},'claimed')}
+    if(/not found/.test(error.message))return toast(t('rpold'));
+    return toast(rpErr(error));
+  }
+  RPS[id]=Object.assign(RPS[id]||{},{status:'claimed'});
+  addMsg({id:'c'+id,sender:me.id,type:'rpclaim',content:JSON.stringify({mid:id,amt:c.amt}),created_at:new Date().toISOString()});
+  paintById(id);await refreshWallet();
+  setTimeout(()=>showRp(m,c,{amt:c.amt},'claimed'),700);
+}
+
+// ---------- 文件传输 ----------
+const fsize=n=>n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';
+const fext=f=>((f.name.split('.').length>1?f.name.split('.').pop():'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,8))||'bin';
+function fileCard(m){const c=pj(m.content),u=okUrl(c.url);return `<a class="fc" href="${u?esc(c.url):'#'}" target="_blank" rel="noopener noreferrer" download="${esc(c.name)}"><div class="fi">${esc(fext({name:c.name||''}))}</div><div><b>${esc(c.name)}</b><small>${fsize(c.size||0)}</small></div></a>`}
+async function sendFile(f){
+  if(!f||!cur)return;
+  if(['html','htm','js','mjs','exe','bat','sh','php','svg','xml','apk'].includes(fext(f)))return toast(t('badtype'));
+  if(f.size>50*1048576)return toast(t('toobig'));
+  toast(t('uploading'));
+  const u=await up('files',f,fext(f),f.type||'application/octet-stream');
+  if(u)send('file',JSON.stringify({url:u,name:f.name,size:f.size}));
+}
+
+// ---------- 零钱通知 ----------
+function txTitle(x){return x.type=='in'?t('txin'):x.type=='out'?t('txout'):x.type=='refund'?t('txrefund'):t('txadj')}
+function txSum(x){return txTitle(x)+' '+(x.amt>0?'+':'-')+'¥'+Math.abs(x.amt).toFixed(2)}
+const txUnread=()=>TX.filter(x=>x.t>(+localStorage.getItem('txr_'+me.id)||0)).length;
+function notify(x){
+  const e=$('#nt');
+  e.innerHTML=`<div style="display:flex;gap:10px;align-items:center"><div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#19e3a1,#07a870);display:flex;align-items:center;justify-content:center;color:#fff"><svg class="i" viewBox="0 0 24 24" style="width:20px;height:20px"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 15h2"/></svg></div><div style="flex:1"><b>${esc(t('tx'))}</b><div style="color:var(--tx2);font-size:13px">${esc(txSum(x))} · ${esc(t('txnow').replace('{b}',x.bal.toFixed(2)))}</div></div></div>`;
+  e.classList.remove('h');clearTimeout(ntm);ntm=setTimeout(()=>e.classList.add('h'),3500);
+}
+
+function openTx(){
+  localStorage.setItem('txr_'+me.id,Date.now());
+  $('#txl').innerHTML=TX.length?TX.map((x,i)=>{
+    const d=new Date(x.t),tm=(d.getMonth()+1)+'-'+d.getDate()+' '+d.toTimeString().slice(0,5);
+    const who=x.type=='in'?t('txfrom').replace('{name}',esc(x.who)):x.type=='out'?t('txto').replace('{name}',esc(x.who)):x.type=='refund'?t('txrefd'):'';
+    return `<div class="txc" style="animation-delay:${i*.05}s"><div class="txh"><b>${txTitle(x)}</b><small>${tm}</small></div><div class="txa ${x.type}">${x.amt>0?'+':'-'}${Math.abs(x.amt).toFixed(2)}</div><div class="txd">${who?who+'<br>':''}${esc(t('txnow').replace('{b}',x.bal.toFixed(2)))}</div></div>`}).join(''):`<p class="empty">${t('notx')}</p>`;
+  $('#txp').classList.remove('h');
+}
+function pinned(){
+  const fm=last[me.id],tl=TX[0],un=txUnread();
+  const ic=(bg,svg)=>`<div class="av" style="width:54px;height:54px"><div class="in" style="background:${bg};color:#fff"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px">${svg}</svg></div></div>`;
+  return `<div class="row" onclick="openChat('${me.id}')">${ic('linear-gradient(135deg,#4fd8ff,#8a6bff)','<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>')}<div class="mid"><b>${t('ft')}</b><small>${esc(pv(fm)||t('ftsub'))}</small></div><div class="rt"><small>${fm?fmt(fm.created_at):''}</small></div></div>
+  <div class="row" onclick="openTx()">${ic('linear-gradient(135deg,#19e3a1,#07a870)','<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 15h2"/>')}<div class="mid"><b>${t('tx')}</b><small>${esc(tl?txSum(tl):t('txsub'))}</small></div><div class="rt"><small>${tl?fmt(tl.t):''}</small>${un?`<i class="bd">${un}</i>`:''}</div></div>`;
+}
+
+// ---------- 资讯 ----------
+const NEWS=[
+{c:1,t:'秋冬换季，衣柜整理的五个小技巧',s:'生活志',tm:'1小时前',n:268,hot:1,g:['#ff9a3c','#ff4fa3'],p:['换季整理衣柜，先从“全部拿出来”开始：把衣物按类别摊开，才能看清自己到底有什么。','接着分成三类：常穿的、偶尔穿的、一年没碰过的。最后一类可以清洗后捐赠或回收。','当季衣物放在最容易拿的位置，反季衣物压缩后放高处，并放入防潮剂。']},
+{c:2,t:'手机电池怎样用更耐久？这几个习惯值得养成',s:'数码观察',tm:'2小时前',n:356,hot:1,g:['#4fd8ff','#8a6bff'],p:['尽量避免长时间在高温环境下充电或使用，高温是电池老化的主要原因之一。','日常使用中不必每次都充满放空，保持电量在中间区间更有利于电池健康。','使用原装或认证的充电器，并及时更新系统，也能减少异常耗电。']},
+{c:3,t:'每天走路多少步合适？别只盯着一个数字',s:'健康课堂',tm:'3小时前',n:512,hot:1,g:['#19e3a1','#07a870'],p:['不同人群的适宜步数不同，常见的建议是每天保持一定量的日常活动，循序渐进地增加。','比起一天走很多、之后几天不动，持续稳定的运动习惯更重要。','如果有慢性疾病或身体不适，运动量请先咨询医生。']},
+{c:4,t:'记账入门：先从“看清钱花在哪”开始',s:'理财小站',tm:'4小时前',n:174,hot:0,g:['#ffd15c','#ff9a3c'],p:['记账的第一步不是省钱，而是了解自己的钱都用在了哪些地方。','每个月只需要把支出分成几大类：吃饭、交通、居住、娱乐、其他，就足够看出规律。','坚持三个月后再决定哪些支出可以调整，会更有依据。']},
+{c:1,t:'周末在家做饭：三道十五分钟快手菜',s:'美食日记',tm:'5小时前',n:98,hot:0,g:['#ff5a5a','#c8102e'],p:['番茄炒蛋、蒜蓉青菜、葱油拌面，是最适合新手的快手组合。','提前备好食材，开火后按“先慢后快”的顺序操作，可以让时间缩短一半。','做完顺手清洗锅具，下一次做饭会更轻松。']},
+{c:2,t:'如何给账号设置更安全的密码',s:'安全提醒',tm:'昨天',n:231,hot:0,g:['#7dffcb','#4fd8ff'],p:['密码尽量使用较长的短句组合，长度比复杂符号更重要。','不同的重要账号不要重复使用同一个密码，可以借助密码管理工具。','能开启二次验证的账号建议都开启。']},
+{c:3,t:'睡前一小时，这样做更容易入睡',s:'健康课堂',tm:'昨天',n:189,hot:0,g:['#8a6bff','#ff4fa3'],p:['睡前一小时尽量减少屏幕刺激，调暗灯光，让身体慢慢进入休息状态。','固定起床和入睡的时间，周末也尽量保持接近。','如果长期失眠，建议到正规医院咨询。']},
+{c:4,t:'理财之前，先给自己准备一笔应急金',s:'理财小站',tm:'昨天',n:143,hot:0,g:['#ffc861','#ff4fa3'],p:['应急金是为突发情况准备的资金，通常建议覆盖几个月的基本开销。','它应该放在随时能取用、风险较低的地方，而不是用来追求高收益。','应急金准备好以后，再考虑其他理财安排会更从容。']}];
+let nc=0,nq='';
+function renderNews(){
+  const cats=t('ncats'),top=nc==0&&!nq;
+  const hot=NEWS.map((n,i)=>({...n,i})).sort((a,b)=>b.n-a.n).slice(0,4);
+  $('#main').innerHTML=`<div class="sb"><input id="nqi" placeholder="${t('nsearch')}" value="${esc(nq)}" oninput="nq=this.value.trim();renderNewsList()"></div>
+  <div class="ncat">${cats.map((c,i)=>`<button class="${i==nc?'on':''}" onclick="nc=${i};renderNews()">${c}</button>`).join('')}</div>
+  ${top?`<div class="bn">${NEWS.slice(0,3).map((n,i)=>`<div style="background:linear-gradient(135deg,${n.g[0]},${n.g[1]});animation-delay:${i*4}s" onclick="openArt(${i})">${esc(n.t)}</div>`).join('')}</div>
+  <div class="card"><h3>${t('hot')}</h3>${hot.map((n,i)=>`<div class="hr" onclick="openArt(${n.i})"><i>${i+1}</i><span>${esc(n.t)}</span></div>`).join('')}</div>`:''}
+  <div id="nl"></div>`;
+  renderNewsList();
+}
+function renderNewsList(){
+  const cats=t('ncats');
+  const list=NEWS.map((n,i)=>({...n,i})).filter(n=>(nc==0||n.c==nc)&&(!nq||n.t.includes(nq)));
+  $('#nl').innerHTML=list.length?list.map((n,k)=>`<div class="ni" style="animation-delay:${k*.05}s" onclick="openArt(${n.i})"><div class="nt"><b>${esc(n.t)}</b><div class="nm">${n.hot?'<i class="hotb">热</i>':''}<span>${n.s}</span><span>${n.tm}</span><span>${n.n}${t('cmt')}</span></div></div><div class="th" style="background:linear-gradient(135deg,${n.g[0]},${n.g[1]})">${cats[n.c]}</div></div>`).join(''):`<p class="empty">${t('none')}</p>`;
+}
+function openArt(i){
+  const n=NEWS[i];
+  $('#artb').innerHTML=`<h2 class="ah">${esc(n.t)}</h2><div class="nm"><span>${n.s}</span><span>${n.tm}</span><span>${n.n}${t('cmt')}</span></div><div class="ahero" style="background:linear-gradient(135deg,${n.g[0]},${n.g[1]})"></div>${n.p.map(x=>`<p>${esc(x)}</p>`).join('')}`;
+  $('#art').classList.remove('h');
+}
+
+// ---------- 运动（步数）----------
+let stp={},goal=+localStorage.goal||8000;
+const today=()=>new Date().toLocaleDateString('sv');
+async function loadSteps(){
+  const {data}=await sb.from('steps').select('*').eq('day',today());
+  stp={};(data||[]).forEach(r=>stp[r.user_id]=r.count);
+  if(tab=='steps')renderSteps();
+}
+function countN(el,v){const s=performance.now();requestAnimationFrame(function f(n){const k=Math.min(1,Math.max(0,(n-s)/1000));el.textContent=Math.round(v*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)})}
+function renderSteps(){
+  const my=stp[me.id]||0,C=2*Math.PI*84;
+  const people=[prof,...friends].map(p=>({p,n:stp[p.id]||0})).sort((a,b)=>b.n-a.n);
+  $('#main').innerHTML=`<div class="card" style="text-align:center"><div class="ring2"><svg viewBox="0 0 200 200" width="220" height="220"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--a1)"/><stop offset="1" stop-color="var(--a2)"/></linearGradient></defs><circle cx="100" cy="100" r="84" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="14"/><circle id="sr" cx="100" cy="100" r="84" fill="none" stroke="url(#sg)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" transform="rotate(-90 100 100)" style="transition:stroke-dashoffset 1.2s ease;filter:drop-shadow(0 0 8px var(--a1))"/></svg><div class="rn"><small>${t('stepsToday')}</small><b id="sn">0</b><small>${t('goal')} ${goal}</small></div></div>
+  <div class="flex" style="justify-content:space-around;margin:6px 0 14px"><span><b>${(my*0.0007).toFixed(1)}</b> ${t('km')}</span><span><b>${Math.round(my*0.04)}</b> ${t('kcal')}</span></div>
+  <div class="flex"><input id="si" type="number" inputmode="numeric" min="0" placeholder="${t('stepset')}" value="${my||''}"><button class="btn" onclick="once('st',()=>setSteps(+$('#si').value))">${t('upd')}</button></div>
+  <div class="flex" style="margin-top:10px;justify-content:center"><button class="btn g" onclick="setSteps((stp[me.id]||0)+1000)">+1000</button><button class="btn g" onclick="setSteps((stp[me.id]||0)+5000)">+5000</button></div></div>
+  <div class="sec" style="padding:4px 18px;color:var(--tx2);font-size:13px">${t('rank')}</div>
+  ${people.map((x,i)=>`<div class="row" style="cursor:default;animation-delay:${i*.06}s"><b class="rk"${i==0?' style="color:var(--a1)"':''}>${i+1}</b>${av(x.p,44,i==0)}<div class="mid"><b>${esc(x.p.username)}</b></div><b style="color:var(--a1);font-size:18px">${x.n}</b></div>`).join('')}`;
+  setTimeout(()=>{const r=$('#sr');if(r){r.style.strokeDashoffset=C*(1-Math.min(1,my/goal));countN($('#sn'),my)}},60);
+}
+async function setSteps(n){
+  if(!Number.isFinite(n)||n<0||n>200000)return toast(t('rpbad'));
+  n=Math.round(n);
+  const {error}=await sb.from('steps').upsert({user_id:me.id,day:today(),count:n,updated_at:new Date().toISOString()},{onConflict:'user_id,day'});
+  if(error)return toast(error.code=='42P01'||/steps/.test(error.message)?t('stepsql'):error.message);
+  stp[me.id]=n;renderSteps();toast(t('saved'));
+}
+
+// ---------- 群聊 ----------
+const gm=m=>({id:'g'+m.id,sender:m.sender,receiver:null,type:m.type,content:m.content,created_at:m.created_at,gid:m.group_id,recalled:m.recalled});
+const memb=id=>((GM[cur&&cur.gid]||[]).find(x=>x&&x.id==id))||{username:'?'};
+const memb2=(gid,id)=>(((GM[gid]||[]).find(x=>x&&x.id==id))||{username:''}).username;
+async function loadGroups(){
+  const {data:ms}=await sb.from('group_members').select('group_id').eq('user_id',me.id);
+  const ids=(ms||[]).map(x=>x.group_id);
+  if(!ids.length){groups=[];GM={};return}
+  const [{data:gs},{data:mm},{data:lg}]=await Promise.all([
+    sb.from('chat_groups').select('*').in('id',ids),
+    sb.from('group_members').select('group_id,user_id').in('group_id',ids),
+    sb.from('group_messages').select('*').in('group_id',ids).order('created_at',{ascending:false}).limit(300)]);
+  groups=gs||[];
+  const uids=[...new Set((mm||[]).map(x=>x.user_id))];
+  const {data:ps}=await sb.from('profiles').select('*').in('id',uids);
+  const pm=Object.fromEntries((ps||[]).map(x=>[x.id,x]));
+  GM={};(mm||[]).forEach(x=>{(GM[x.group_id]=GM[x.group_id]||[]).push(pm[x.user_id])});
+  const seen={};(lg||[]).forEach(m=>{const k='g'+m.group_id;if(!seen[k]){seen[k]=1;last[k]=gm(m)}});
+}
+async function openGroup(gid){
+  saveDraft();
+  await loadGroups();
+  const g=groups.find(x=>x.id==gid);if(!g)return;
+  cur={id:'g'+gid,gid,group:1,username:g.name,owner:g.owner};curKey=cur.id;unread[cur.id]=0;updTitle();renderChats();updHead();loadDraft();
+  $('#emo').classList.add('h');$('#more').classList.add('h');$('#chat').classList.remove('h');
+  await loadMsgs();
+}
+async function onGMsg(m){
+  if(m.sender==me.id)return;
+  if(!groups.some(g=>g.id==m.group_id))await loadGroups();
+  const n=gm(m),k='g'+m.group_id,g=groups.find(x=>x.id==m.group_id),nm=g?g.name:'Group';last[k]=n;
+  if(cur&&cur.group&&cur.gid==m.group_id){addMsg(n);if(document.hidden){beep();pushNoti(nm,pv(n),k,()=>openGroup(m.group_id))}}
+  else{unread[k]=(unread[k]||0)+1;beep();updTitle();pushNoti(nm,pv(n),k,()=>openGroup(m.group_id))}
+  if(tab=='chats')renderChats();
+}
+const chk=f=>`<label class="row" style="cursor:pointer;margin:0 0 8px"><input type="checkbox" class="gck" value="${f.id}" style="width:22px;height:22px;padding:0;accent-color:var(--a1);flex:none">${av(f,44)}<div class="mid"><b>${esc(f.username)}</b></div></label>`;
+const ngRow=()=>`<div class="row" onclick="openGc()"><div class="av" style="width:54px;height:54px"><div class="in" style="background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px"><path d="M12 5v14M5 12h14"/></svg></div></div><div class="mid"><b>${t('newgrp')}</b><small>${t('ngsub')}</small></div></div>`;
+function openGc(){
+  $('#gn').value='';
+  $('#gl').innerHTML=friends.length?friends.map(f=>chk(f).replace('class="row" style="cursor:pointer;margin:0 0 8px"','class="row" style="cursor:pointer"')).join(''):`<p class="empty">${t('gnone')}</p>`;
+  $('#gc').classList.remove('h');
+}
+async function mkGroup(){
+  const name=$('#gn').value.trim(),ids=[...new Set([...document.querySelectorAll('#gl .gck:checked')].map(x=>x.value))];
+  if(!name)return toast(t('gname'));
+  if(ids.length<2)return toast(t('gmin'));
+  const {data:g,error}=await sb.from('chat_groups').insert({name,owner:me.id}).select().single();
+  if(error)return toast(error.message);
+  const {error:e2}=await sb.from('group_members').insert([me.id,...ids].map(u=>({group_id:g.id,user_id:u})));
+  if(e2){await sb.from('chat_groups').delete().eq('id',g.id);return toast(e2.message)}
+  $('#gc').classList.add('h');await loadGroups();renderChats();openGroup(g.id);
+}
+function openGi(){
+  const g=groups.find(x=>x.id==cur.gid),ms=(GM[cur.gid]||[]).filter(Boolean),own=g.owner==me.id;
+  const have=new Set(ms.map(x=>x.id)),avail=friends.filter(f=>!have.has(f.id));
+  $('#gib').innerHTML=`<div class="big">${av({group:1},84,1)}<b style="font-size:20px">${esc(g.name)}</b><small style="color:var(--tx2)">${ms.length} ${t('people')}</small></div>
+  <div class="card"><h3>${t('gmem')}</h3>${ms.map(x=>`<div class="flex" style="padding:6px 0">${av(x,40)}<b style="flex:1;font-weight:500">${esc(x.username)}</b>${x.id==g.owner?`<small style="color:var(--a1)">${t('gowner')}</small>`:''}${own&&x.id!=g.owner?`<button class="btn g" style="padding:4px 10px;font-size:13px" onclick="rmMem('${x.id}')">${t('gkick')}</button>`:''}</div>`).join('')}</div>
+  ${own&&avail.length?`<div class="card"><h3>${t('gadd')}</h3>${avail.map(chk).join('')}<button class="btn" style="width:100%;margin-top:4px" onclick="addMem()">${t('gaddgo')}</button></div>`:''}
+  <div style="padding:6px 12px"><button class="btn g" style="width:100%;color:#ff6b7a" onclick="leaveG()">${own?t('gdis'):t('gleave')}</button></div>`;
+  $('#gi').classList.remove('h');
+}
+async function addMem(){
+  const ids=[...document.querySelectorAll('#gib .gck:checked')].map(x=>x.value);if(!ids.length)return;
+  const {error}=await sb.from('group_members').insert(ids.map(u=>({group_id:cur.gid,user_id:u})));
+  if(error)return toast(error.message);
+  await loadGroups();updHead();openGi();
+}
+async function leaveG(){
+  if(!confirm(t('gq')))return;
+  const g=groups.find(x=>x.id==cur.gid);
+  if(g.owner==me.id)await sb.from('chat_groups').delete().eq('id',g.id);
+  else await sb.from('group_members').delete().eq('group_id',g.id).eq('user_id',me.id);
+  $('#gi').classList.add('h');closeChat();await loadGroups();renderChats();
+}
+
+// ---------- 升级：工具 ----------
+let AC=null;
+function actx(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state=='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,d,v){const a=actx();if(!a)return;try{const o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=f;g.gain.setValueAtTime(v||.1,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);o.start();o.stop(a.currentTime+d)}catch(e){}}
+let ringT=null;
+function startRing(){stopRing();if(SET.ring){const r=()=>{tone(660,.3,.12);setTimeout(()=>tone(880,.3,.12),350)};r();ringT=setInterval(r,1800)}if(SET.vib&&navigator.vibrate)try{navigator.vibrate([400,200,400])}catch(e){}}
+function stopRing(){clearInterval(ringT);ringT=null}
+const linkify=x=>x.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+const tmf=x=>new Date(x).toTimeString().slice(0,5);
+const fday=x=>new Date(x).toLocaleDateString(lang=='zh'?'zh-CN':'en-US',{month:'long',day:'numeric',weekday:'short'});
+const errMsg=e=>!navigator.onLine?t('offline2'):(e.status==401||/jwt|token/i.test(e.message||''))?t('relogin'):(e.message||String(e));
+const rpErr=e=>/insufficient/.test(e.message)?t('rpnomoney'):/blocked|not friends/.test(e.message)?t('blockedmsg'):/function|schema cache/.test(e.message)?t('sqlhint'):errMsg(e);
+const permMsg=e=>e&&e.name=='NotAllowedError'?t('permdeny'):e&&e.name=='NotFoundError'?t('nodev'):t('nomic');
+function place(d,pre,m){
+  const box=$('#msgs');
+  if(pre){box.prepend(d);return}
+  const day=fday(m.created_at);
+  if(day!=chatDay){chatDay=day;const x=document.createElement('div');x.className='sys';x.textContent=day;box.append(x)}
+  box.append(d);box.scrollTop=1e9;
+}
+function copyText(x){
+  const ok=()=>toast(t('copied'));
+  const fb=()=>{const a=document.createElement('textarea');a.value=x;a.style.position='fixed';a.style.opacity='0';document.body.append(a);a.select();try{document.execCommand('copy');ok()}catch(e){}a.remove()};
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(x).then(ok,fb);else fb();
+}
+async function compress(f,max,q){
+  if(!f.type.startsWith('image/')||f.type=='image/gif'||f.type=='image/svg+xml')return f;
+  try{
+    const bm=await createImageBitmap(f);
+    const k=Math.min(1,max/Math.max(bm.width,bm.height));
+    if(k==1&&f.size<600000)return f;
+    const c=document.createElement('canvas');c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);
+    c.getContext('2d').drawImage(bm,0,0,c.width,c.height);
+    const b=await new Promise(r=>c.toBlob(r,'image/jpeg',q));
+    return b&&b.size<f.size?b:f;
+  }catch(e){return f}
+}
+function pushNoti(title,body,tag,open){
+  if(!SET.noti||!('Notification' in window)||Notification.permission!='granted'||!document.hidden)return;
+  try{const n=new Notification(title,{body,tag});n.onclick=()=>{window.focus();n.close();open&&open()}}catch(e){}
+}
+function togSet(k){
+  SET[k]=SET[k]?0:1;
+  if(k=='noti'&&SET.noti){
+    if(!('Notification' in window)){SET.noti=0;toast(t('nonoti'))}
+    else Notification.requestPermission().then(r=>{if(r!='granted'){SET.noti=0;toast(t('notidenied'))}saveSet();renderMe()});
+  }
+  if(k=='snd'&&SET.snd)beep();
+  saveSet();renderMe();
+}
+function typing(){if(!cur||cur.group||cur.special)return;const n=Date.now();if(n-lastTyping<2500)return;lastTyping=n;sendSig(cur.id,{k:'typing'})}
+function saveDraft(){if(curKey)DR[curKey]=$('#inp').value}
+function loadDraft(){$('#inp').value=DR[curKey]||''}
+
+// ---------- 升级：消息加载（分页）、发送状态、已读 ----------
+async function fetchMsgs(before){
+  let q;
+  if(cur.group)q=sb.from('group_messages').select('*').eq('group_id',cur.gid);
+  else{const a=me.id,b=cur.id;q=sb.from('messages').select('*').or(`and(sender.eq.${a},receiver.eq.${b}),and(sender.eq.${b},receiver.eq.${a})`)}
+  if(before)q=q.lt('created_at',before);
+  const {data,error}=await q.order('created_at',{ascending:false}).limit(PAGE);
+  if(error){toast(errMsg(error));return null}
+  return cur.group?data.map(gm):data;
+}
+async function loadRps(list){
+  const ids=list.filter(m=>m.type=='redpacket').map(m=>m.id);if(!ids.length)return;
+  const {data}=await sb.from('red_packets').select('msg_id,status,amount,expires_at').in('msg_id',ids);
+  (data||[]).forEach(r=>RPS[r.msg_id]=r);
+}
+async function loadMsgs(){
+  $('#msgs').innerHTML='';chatDay='';oldest=null;hasMore=false;
+  const list=await fetchMsgs(null);if(!list)return;
+  const asc=[...list].reverse();
+  await loadRps(asc);
+  asc.forEach(m=>addMsg(m));
+  oldest=asc.length?asc[0].created_at:null;hasMore=list.length>=PAGE;
+  $('#msgs').scrollTop=1e9;
+}
+async function loadOlder(){
+  if(loadingMore||!hasMore||!cur||!oldest)return;loadingMore=true;
+  const box=$('#msgs'),h0=box.scrollHeight;
+  const list=await fetchMsgs(oldest);
+  if(list&&list.length){await loadRps(list);list.forEach(m=>addMsg(m,true));oldest=list[list.length-1].created_at;hasMore=list.length>=PAGE;box.scrollTop=box.scrollHeight-h0}
+  else hasMore=false;
+  loadingMore=false;
+}
+async function doSend(tmp,c){
+  let r;
+  if(c.group)r=await sb.from('group_messages').insert({group_id:c.gid,sender:me.id,type:tmp.type,content:tmp.content}).select().single();
+  else r=await sb.from('messages').insert({sender:me.id,receiver:c.id,type:tmp.type,content:tmp.content}).select().single();
+  const el=document.querySelector('[data-mid="'+tmp.id+'"]');
+  if(r.error){
+    tmp._pending=0;tmp._fail=1;tmp._c=c;
+    toast(r.error.code=='42501'?t('blockedmsg'):errMsg(r.error));
+    if(el)paint(el,tmp);return;
+  }
+  const real=c.group?gm(r.data):r.data;
+  last[c.id]=real;MS[real.id]=real;delete MS[tmp.id];
+  if(el){el.dataset.mid=real.id;paint(el,real)}
+  return real;
+}
+function retry(id){const tmp=MS[id];if(!tmp)return;tmp._fail=0;tmp._pending=1;paintById(id);doSend(tmp,tmp._c||cur)}
+function markRead(peer){if(!peer||peer==me.id||String(peer)[0]=='g')return;sb.rpc('mark_read',{p_peer:peer}).then(()=>{},()=>{})}
+function onMsgUpd(m,g){
+  const key=g?'g'+m.id:m.id,x=MS[key];
+  if(x){x.recalled=m.recalled;if(!g)x.read_at=m.read_at;paintById(key)}
+  Object.keys(last).forEach(k=>{if(last[k]&&last[k].id==key){last[k].recalled=m.recalled}});
+  if(tab=='chats')renderChats();
+}
+async function loadUnread(){
+  const {data}=await sb.from('messages').select('sender').eq('receiver',me.id).is('read_at',null).neq('sender',me.id).limit(1000);
+  Object.keys(unread).forEach(k=>{if(String(k)[0]!='g')delete unread[k]});
+  (data||[]).forEach(x=>unread[x.sender]=(unread[x.sender]||0)+1);
+}
+async function loadBlocks(){const {data}=await sb.from('blocks').select('blocked').eq('blocker',me.id);BL=new Set((data||[]).map(x=>x.blocked))}
+async function resync(){
+  if(!me||!prof||syncing)return;syncing=true;
+  try{await Promise.all([loadRel(),loadLast(),loadUnread()]);await loadGroups();await refreshWallet();runRefund();if(cur)await loadMsgs();if(tab=='chats')renderChats()}
+  finally{syncing=false}
+}
+
+// ---------- 升级：钱包（数据库）----------
+const nameOf=id=>{const f=friends.find(x=>x.id==id);if(f)return f.username;for(const k in GM){const m=(GM[k]||[]).find(x=>x&&x.id==id);if(m)return m.username}return ''};
+async function loadWallet(){
+  const init=parseFloat(localStorage.bal);
+  const {data,error}=await sb.rpc('ensure_wallet',{p_init:isNaN(init)?1000:init});
+  if(error){walletOk=false;return}
+  walletOk=true;bal=+data;localStorage.removeItem('bal');
+  await loadTx();
+}
+async function loadBal(){const {data}=await sb.from('wallets').select('balance').eq('user_id',me.id).maybeSingle();if(data)bal=+data.balance}
+async function loadTx(){
+  const {data}=await sb.from('wallet_tx').select('*').order('id',{ascending:false}).limit(60);
+  TX=(data||[]).map(r=>({id:r.id,t:new Date(r.created_at).getTime(),type:r.type,amt:+r.amount,bal:+r.balance_after,who:nameOf(r.counterparty)}));
+  const top=TX[0];
+  if(top){if(txInit&&top.id>lastTxId)notify(top);lastTxId=Math.max(lastTxId,top.id)}
+  txInit=true;
+  const w=$('#wb');if(w)w.textContent='¥ '+bal.toFixed(2);
+  if(tab=='chats')renderChats();
+}
+async function refreshWallet(){await loadBal();await loadTx()}
+async function runRefund(){
+  const {data,error}=await sb.rpc('refund_expired_red_packets');
+  if(error||!data||!data.length)return;
+  data.forEach(r=>{RPS[r.out_msg]=Object.assign(RPS[r.out_msg]||{},{status:'refunded'});paintById(r.out_msg)});
+  await refreshWallet();toast(t('rprefunded'));
+}
+
+// ---------- 升级：好友资料 / 拉黑 / 群成员 ----------
+function headAct(){if(!cur)return;if(cur.group)openGi();else openFc()}
+function openFc(){
+  const f=cur,bl=BL.has(f.id);
+  $('#fcb').innerHTML=`<div class="big">${av(f,92,1)}<b style="font-size:20px">${esc(f.username)}</b><small style="color:var(--tx2)">${online.has(f.id)?t('online'):t('offline')}</small></div>
+  <div style="padding:6px 12px;display:grid;gap:10px"><button class="btn g" onclick="toggleBlock()">${bl?t('unblock'):t('block')}</button><button class="btn g" style="color:#ff6b7a" onclick="delFriend()">${t('delfr')}</button></div>`;
+  $('#fc').classList.remove('h');
+}
+async function toggleBlock(){
+  const id=cur.id;
+  if(BL.has(id)){const {error}=await sb.from('blocks').delete().eq('blocker',me.id).eq('blocked',id);if(error)return toast(errMsg(error));BL.delete(id);toast(t('unblocked'))}
+  else{const {error}=await sb.from('blocks').insert({blocker:me.id,blocked:id});if(error)return toast(errMsg(error));BL.add(id);toast(t('blockedok'))}
+  openFc();
+}
+async function rmMem(uid){
+  if(!confirm(t('gq')))return;
+  const {error}=await sb.from('group_members').delete().eq('group_id',cur.gid).eq('user_id',uid);
+  if(error)return toast(errMsg(error));
+  await loadGroups();updHead();openGi();
+}
+
+// ---------- 升级：全局监听 ----------
+document.addEventListener('click',()=>actx(),{once:true});
+$('#msgs').addEventListener('scroll',()=>{if($('#msgs').scrollTop<60)loadOlder()});
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){hiddenAt=Date.now();if(rec&&rec.state=='recording'){recCancel=true;rec.stop()}}
+  else{if(cur&&!cur.group&&!cur.special)markRead(cur.id);if(me&&Date.now()-hiddenAt>30000)resync()}
+});
+window.addEventListener('offline',()=>$('#net').classList.remove('h'));
+window.addEventListener('online',()=>{$('#net').classList.add('h');toast(t('backonline'));resync()});
+document.addEventListener('keydown',e=>{
+  if(e.key!='Escape')return;
+  for(const id of ['lb','rpo','rpm','fc','gi','gc','txp','art']){const el=$('#'+id);if(el&&!el.classList.contains('h')){el.classList.add('h');return}}
+  if(!$('#chat').classList.contains('h'))closeChat();
+});
+let errN=0;
+window.addEventListener('error',e=>{if(errN++>4||!me)return;sb.from('client_errors').insert({msg:String(e.message).slice(0,300),url:location.href,ua:navigator.userAgent.slice(0,200)}).then(()=>{},()=>{})});
+sb.auth.onAuthStateChange(ev=>{if(ev=='SIGNED_OUT'&&me)location.reload()});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
 // ---------- 启动 ----------
-applyLang();document.documentElement.lang=lang;
+applyTheme();applyLang();document.documentElement.lang=lang;
 sb.auth.getSession().then(({data})=>data.session?start(data.session.user):show('auth'));
 </script>
 </body></html>
