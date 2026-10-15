@@ -454,7 +454,7 @@ function addMsg(m,pre){
     const c=pj(m.content);
     RPS[c.mid]=Object.assign(RPS[c.mid]||{},{status:m.type=='rpclaim'?'claimed':'refunded'});
     d.className='sys';
-    d.textContent=m.type=='rprefund'?t('rprefmsg').replace('{n}',c.amt):(m.sender==me.id?t('rpclaimme'):t('rpclaimpeer').replace('{name}',cur.group?memb(m.sender).username:cur.username)).replace('{n}',c.amt);
+    d.textContent=sysText(m);
     place(d,pre===true,m);paintById(c.mid);return;
   }
   paint(d,m);place(d,pre===true,m);
@@ -623,6 +623,7 @@ function endCall(notify){
 function saveRC(){localStorage.setItem('rc_'+me.id,JSON.stringify([...RC]))}
 function paintById(id){const el=document.querySelector('[data-mid="'+id+'"]');if(el&&MS[id]&&cur)paint(el,MS[id])}
 function paint(d,m){
+  if(m.type=='rpclaim'||m.type=='rprefund'){d.className='sys';d.textContent=sysText(m);return}
   const mine=m.sender==me.id,p=mine?prof:(cur.group?memb(m.sender):cur);
   if(isRc(m)&&m.type!='redpacket'){
     d.className='sys';
@@ -896,6 +897,7 @@ async function leaveG(){
 }
 
 // ---------- 升级：工具 ----------
+function sysText(m){const c=pj(m.content);return m.type=='rprefund'?t('rprefmsg').replace('{n}',c.amt):(m.sender==me.id?t('rpclaimme'):t('rpclaimpeer').replace('{name}',cur&&cur.group?memb(m.sender).username:(cur?cur.username:''))).replace('{n}',c.amt)}
 let AC=null;
 function actx(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state=='suspended')AC.resume();return AC}catch(e){return null}}
 function tone(f,d,v){const a=actx();if(!a)return;try{const o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=f;g.gain.setValueAtTime(v||.1,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);o.start();o.stop(a.currentTime+d)}catch(e){}}
